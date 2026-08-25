@@ -92,3 +92,16 @@ def test_out_writes_to_separate_file_leaving_input_unchanged(tmp_path):
     assert rc == 0
     assert dst.read_text(encoding="utf-8") == original
     assert assets.MARKER_BEGIN in out_path.read_text(encoding="utf-8")
+
+
+def test_legacy_marker_detected_and_rejected(tmp_path):
+    """Injection is rejected when input contains legacy legacy-layer marker."""
+    dst = tmp_path / "sample.html"
+    original = FIXTURE.read_text(encoding="utf-8")
+    # Insert the legacy marker into the HTML
+    with_legacy = original.replace("</body>", "<!-- legacy-layer:begin --></body>")
+    dst.write_text(with_legacy, encoding="utf-8")
+    rc = cli.main([str(dst), "--unit-selector", "body"])
+    assert rc == 2
+    # Input file must be unchanged
+    assert dst.read_text(encoding="utf-8") == with_legacy
