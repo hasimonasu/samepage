@@ -1,0 +1,22 @@
+[project]
+name = "same-page"
+version = "0.1.0"
+description = "A removable review-comment layer for static HTML."
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+samepage = "samepage.cli:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["samepage*"]
+
+[tool.setuptools.package-data]
+samepage = ["assets/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
