@@ -4,6 +4,23 @@
 
 [日本語版 README はこちら](README.ja.md)
 
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)
+![Zero runtime dependencies](https://img.shields.io/badge/runtime%20deps-none-brightgreen.svg)
+
+![samepage demo: comment on the rendered page, export JSON, get replies and question pins](docs/images/demo.gif)
+
+*Select text or an element, comment, press `j` — the JSON goes straight to your agent; replies
+and question pins come back onto the same page.*
+
+## Why
+
+Even when an AI produces the HTML deliverable, "review" usually still means describing the
+location in chat and asking for a fix. samepage lets the human comment directly on the rendered
+page instead, and hands the AI structured JSON so it fixes the *original* (the source, if the
+HTML is generated) and writes replies and its own questions back onto the same page. Once there
+is consensus, a clean, publishable HTML with the review layer stripped is produced.
+
 ## What it is
 
 samepage is a removable review layer that lets a human and an AI agent look at, and negotiate
@@ -45,6 +62,20 @@ flowchart LR
 - **Consensus → finalize**: once every comment is resolved, `--finalize` produces a separate,
   clean HTML with the review layer and any discussion blocks removed — the one you actually ship.
 
+## How it compares
+
+samepage isn't trying to replace these — it fills the gap where a human needs to review a
+rendered artifact and an AI agent needs to act on that review.
+
+| | samepage | Google Docs / Notion comments | GitHub PR review | Web annotation (Hypothesis etc.) |
+|---|---|---|---|---|
+| What you comment on | any static HTML, as rendered | the service's own documents | a text diff | any web page |
+| Server / account | none | required | required | required |
+| Handing feedback to an AI | one self-contained JSON, pasted into chat | manual copy or bot integration | manual copy or bot integration | manual copy or bot integration |
+| AI → human questions | question pins on the same page | comment replies | comment replies | comment replies |
+| Where fixes land | the original — the source, if generated | the document itself | the document itself | — |
+| Publishable output | `--finalize` strips the layer | — | — | — |
+
 ## Quick start
 
 ```bash
@@ -60,6 +91,14 @@ Then, in the browser:
 2. Press `c` to open the comment panel, `j` to copy the export JSON to the clipboard.
 3. Paste that JSON into your coding agent's chat. It carries its own instructions, so a plain
    paste — with no extra explanation — is enough for the agent to act on it.
+
+## Requirements
+
+| Side | Needs |
+|---|---|
+| Injecting (agent / developer) | Python 3.9+ — no third-party packages |
+| Reviewing (human) | A modern browser that opens `file://` HTML (Chrome, Firefox, Safari, Edge) and clipboard access. No server, extension or account |
+| Optional | Playwright — only for the browser tests; the `markdown` package — only for `docs/build_readme_html.py` |
 
 ## Install as a Claude Code skill
 
@@ -149,6 +188,40 @@ If you're distributing the HTML itself (attaching it to a README, sharing it out
 machine, etc.), pass `--no-source-path` so that field is embedded as `null` instead of a local
 filesystem path.
 
+## FAQ
+
+**Q. How do I tell whether an HTML file is the original or a generated artifact?**
+Look for a same-named source file next to it (e.g. a `.md` beside the path in `sourceHtml`), or
+for a "Generated from ..." marker inside the HTML itself. If it's the original, edit the HTML
+directly; if it's generated, edit the source and regenerate (SKILL.md §4, rule 1).
+
+**Q. I regenerated the HTML and a comment's `path` no longer matches — is the comment lost?**
+No. `element` and `insertion-point` targets fall back automatically: `element` falls back from
+`path` to a nearby match using `tag` + `nearText` (the first 60 chars of the element's text);
+`insertion-point` falls back from `afterPath` to `afterTag`+`nearText`, and if that also fails,
+resolves from the `beforePath`/`beforeTag` side instead. `diagram-node` falls back from `nodeId`
+to `nodeLabel`, then to `nearText`. See SKILL.md §4.
+
+**Q. Where are comments stored?**
+In the browser's `localStorage`, under the key `samepage:<doc>` — per browser profile, not synced
+anywhere. The exported JSON is the durable record; `--doc-id` controls the `<doc>` part of that
+key (default: the input file's stem).
+
+**Q. What happens if I inject into an already-injected file?**
+Re-running injection replaces the layer in place (idempotent). Omitting `--responses` and/or
+`--questions` on a re-injection clears whichever of those layers was previously embedded — only
+the most recently injected set is ever shown.
+
+**Q. Why can't I comment on a node in my SVG diagram?**
+Because the generator that produced the diagram hasn't tagged its nodes with `data-sp-node` — the
+CLI never adds this attribute automatically; only the generator knows the semantic unit. See "For
+document generators" above and `SKILL.md` §7.5.
+
+**Q. `--finalize` refuses because of unresolved comments — what now?**
+Pass a `--comments` file: it reports any `open` items and aborts. Either resolve them in the
+review, or pass `--force` to finalize anyway. Finalized output defaults to `<stem>.final.html`
+(override with `--out`); the input HTML is left unchanged.
+
 ## Development
 
 ```bash
@@ -158,6 +231,23 @@ python3 -m pytest
 Browser-driven tests (`tests/test_browser.py`) additionally require Playwright
 (`pip install playwright && playwright install chromium`); they're skipped automatically if
 Playwright isn't available.
+
+## Contributing
+
+Issues and PRs are welcome. For a bug report, attach the pre-injection HTML (or a minimal repro)
+and the exported comment JSON.
+
+Development happens on `develop`; `main` is the release branch and is merged by the maintainer
+only. Open PRs against `develop`.
+
+Run `python3 -m pytest` before opening a PR (browser tests run when Playwright is installed,
+otherwise they're skipped).
+
+Naming (the `sp-` CSS prefix, `data-sp-*` attributes, marker comments) is fixed — see
+`docs/design.md`.
+
+To rebuild the demo: `python3 docs/build_demo_gif.py`. To rebuild the README HTML:
+`python3 docs/build_readme_html.py README.md README.html`.
 
 ## License
 

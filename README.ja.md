@@ -4,6 +4,22 @@
 
 [English README is here](README.md)
 
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)
+![Zero runtime dependencies](https://img.shields.io/badge/runtime%20deps-none-brightgreen.svg)
+
+![samepage demo: comment on the rendered page, export JSON, get replies and question pins](docs/images/demo.gif)
+
+*テキストや要素を選んでコメントし、`j` を押すだけで、JSONがそのままエージェントに渡る。
+返信と質問ピンは同じページに戻ってくる。*
+
+## なぜ必要か
+
+AIがHTML成果物を作った場合でも、レビューは結局チャット上で場所を説明して直してもらう形に
+なりがちだ。samepageは、人が表示されたページに直接コメントできるようにし、AIには構造化JSON
+を渡して**原本**（HTMLが生成物なら生成元）を直させ、返信とAI自身の質問を同じページに書き戻す。
+合意が取れたら、レビュー層を除いたクリーンな公開用HTMLを書き出す。
+
 ## これは何か
 
 samepage は、人とAIエージェントが同じHTMLドキュメントを見ながら意見をすり合わせるための、
@@ -41,6 +57,20 @@ flowchart LR
 - **合意 → finalize**: 全コメントが解決済みになったら、`--finalize` でレビュー層と議論ブロック
   を取り除いた別ファイルの公開用HTMLを書き出す。これが実際に配布・公開する側。
 
+## 他の手段との比較
+
+samepageはこれらを置き換えるものではない。人がレンダリング済みの成果物をレビューし、AI
+エージェントがそのレビュー結果を反映する必要がある場面のギャップを埋めるためのものだ。
+
+| | samepage | Google Docs / Notionのコメント | GitHub PRレビュー | Web注釈（Hypothesisなど） |
+|---|---|---|---|---|
+| コメント対象 | 任意の静的HTML、表示された状態そのまま | そのサービス自身のドキュメント | テキストの差分 | 任意のWebページ |
+| サーバー・アカウント | 不要 | 必要 | 必要 | 必要 |
+| AIへのフィードバック伝達 | 1つの自己完結したJSONをチャットに貼るだけ | 手動コピーかbot連携 | 手動コピーかbot連携 | 手動コピーかbot連携 |
+| AI→人への質問 | 同じページ上の質問ピン | コメント返信 | コメント返信 | コメント返信 |
+| 修正の反映先 | 原本（生成物なら生成元） | ドキュメントそのもの | ドキュメントそのもの | — |
+| 公開用出力 | `--finalize` でレビュー層を除去 | — | — | — |
+
 ## クイックスタート
 
 ```bash
@@ -56,6 +86,14 @@ open your-doc.html            # または: start / xdg-open
 2. `c` キーでコメントパネルを開閉、`j` キーで書き出しJSONをクリップボードにコピー。
 3. そのJSONをコーディングエージェントのチャットに貼る。JSON自身が作業指示を内包しているため、
    説明を書き添えなくてもそのまま反映作業が伝わる。
+
+## 動作要件
+
+| 側 | 必要なもの |
+|---|---|
+| 注入する側（エージェント／開発者） | Python 3.9以上 — サードパーティ製パッケージは不要 |
+| レビューする側（人） | `file://` のHTMLを開けるモダンブラウザ（Chrome, Firefox, Safari, Edge）とクリップボードへのアクセス。サーバー・拡張機能・アカウントは不要 |
+| 任意 | Playwright — ブラウザテストにのみ使用。`markdown` パッケージ — `docs/build_readme_html.py` にのみ使用 |
 
 ## Claude Code スキルとして導入する
 
@@ -146,6 +184,40 @@ SVG図を埋め込むHTMLを生成する側は、図中の各ノードの意味�
 共有するなど）は `--no-source-path` を付け、このフィールドをローカルのファイルシステムパス
 ではなく `null` として埋め込むこと。
 
+## FAQ
+
+**Q. HTMLファイルが原本なのか生成物なのか、どうやって見分ける？**
+`sourceHtml` のパスの隣に同名の `.md` などの生成元ファイルがあるか、HTML内に「Generated
+from ...」のような印がないかを確認する。原本ならそのHTMLを直接直し、生成物なら生成元を直して
+再生成する（SKILL.md §4 ルール1）。
+
+**Q. HTMLを再生成したらコメントの `path` が一致しなくなった。コメントは失われる？**
+失われない。`element` と `insertion-point` ターゲットには自動フォールバックがある。`element`
+は `path` が使えなければ `tag` + `nearText`（要素テキストの先頭60文字）で近い一致を探す。
+`insertion-point` は `afterPath` から `afterTag`+`nearText` にフォールバックし、それも
+失敗すれば `beforePath`/`beforeTag` 側から解決する。`diagram-node` は `nodeId` から
+`nodeLabel`、さらに `nearText` の順にフォールバックする。詳細は SKILL.md §4。
+
+**Q. コメントはどこに保存される？**
+ブラウザの `localStorage` に、キー `samepage:<doc>` で保存される（ブラウザのプロファイル
+ごと、どこにも同期されない）。書き出したJSONが唯一の永続的な記録であり、`--doc-id` でキーの
+`<doc>` 部分を制御できる（既定は入力ファイルのstem）。
+
+**Q. 既に注入済みのファイルにさらに注入するとどうなる？**
+その場でレビュー層が置き換わる（冪等）。再注入時に `--responses` / `--questions` の
+どちらか（または両方）を省略すると、対応する層は消える（常に直近に注入した内容だけが
+表示される）。
+
+**Q. SVG図中のノードにコメントできないのはなぜ？**
+そのSVG図を生成した側が `data-sp-node` をノードに振っていないため。CLI側はこの属性を自動で
+付与しない（意味的な単位を知っているのは生成側だけ）。上の「ドキュメント生成側向け」の節と
+`SKILL.md` §7.5 を参照。
+
+**Q. `--finalize` が未解決コメントを理由に拒否する。どうすればいい？**
+`--comments` にファイルを渡すと `open` の項目が報告されて中断する。レビュー側で解決するか、
+`--force` を付けて強行する。finalize後の出力先は既定で `<stem>.final.html`（`--out` で
+変更可能）。入力HTMLは変更されない。
+
 ## 開発
 
 ```bash
@@ -155,6 +227,23 @@ python3 -m pytest
 ブラウザ駆動のテスト（`tests/test_browser.py`）は追加でPlaywright
 （`pip install playwright && playwright install chromium`）が必要。Playwrightが無い環境では
 自動的にスキップされる。
+
+## コントリビューション
+
+Issue・PRは歓迎する。バグ報告には、注入前のHTML（または最小の再現手順）と、書き出した
+コメントJSONを添付すること。
+
+開発は `develop` ブランチで行う。`main` はリリースブランチで、マージはメンテナのみが行う。
+PRは `develop` に対して開くこと。
+
+PRを出す前に `python3 -m pytest` を実行すること（ブラウザテストはPlaywrightがインストール
+されていれば実行され、なければスキップされる）。
+
+命名（`sp-` というCSSプレフィックス、`data-sp-*` 属性、マーカーコメント）は固定であり、
+`docs/design.md` を参照。
+
+デモの再生成: `python3 docs/build_demo_gif.py`。READMEのHTML版の再生成:
+`python3 docs/build_readme_html.py README.md README.html`。
 
 ## ライセンス
 
