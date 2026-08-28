@@ -7,3 +7,5 @@ dist/
 *.egg-info/
 .claude/
 .venv/
+# review-layer HTML generated from README*.md (derived artifact)
+/README*.html

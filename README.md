@@ -9,10 +9,14 @@
 samepage is a removable review layer that lets a human and an AI agent look at, and negotiate
 over, the same HTML document. Instead of the usual one-shot "AI writes it, human reads it" flow,
 samepage turns review into a back-and-forth: the human comments directly on the rendered page,
-the AI receives that feedback as structured JSON, applies it to the *source* the HTML was
-generated from, and writes back what it did — including, when it isn't sure how to proceed,
-questions of its own for the human to answer on the same page. The loop repeats until everyone
-agrees, at which point the review layer is stripped out and a clean, publishable HTML is produced.
+the AI receives that feedback as structured JSON, and applies it to the *original*. If the HTML
+itself is the original — hand-written, with nothing it was generated from — the AI edits that
+HTML directly. If the HTML is a generated artifact (built from a Markdown file, a Marp deck, an
+intent-doc IR, and so on), the AI edits the source it came from and regenerates the HTML, since a
+fix made only to the HTML is lost on the next regeneration. Either way, it writes back what it
+did — including, when it isn't sure how to proceed, questions of its own for the human to answer
+on the same page. The loop repeats until everyone agrees, at which point the review layer is
+stripped out and a clean, publishable HTML is produced.
 
 It works on any static HTML, requires no server (everything runs from `file://`), and adds no
 runtime dependencies — a human only ever needs a browser and clipboard access.
@@ -22,7 +26,7 @@ runtime dependencies — a human only ever needs a browser and clipboard access.
 ```mermaid
 flowchart LR
     A[Human: opens injected HTML,<br/>selects text / elements,<br/>writes comments] -->|comment JSON<br/>copy → j| B[AI agent]
-    B -->|edits the source,<br/>not the HTML| C[Regenerate HTML]
+    B -->|fixes the original<br/>(source, if generated)| C[Regenerate HTML]
     C -->|--responses<br/>--questions| D[Human: sees replies,<br/>answers question pins]
     D -->|more comments,<br/>or all resolved| E{Consensus?}
     E -->|not yet| A
@@ -32,6 +36,9 @@ flowchart LR
 - **Human → AI**: comments, anchored to a text range, an element, an insertion point between
   elements, a node inside an SVG diagram, or the whole document. Exported as one self-contained
   JSON, pasted straight into the agent's chat.
+- **Original vs. generated**: before editing, check whether this HTML is the original or a
+  generated artifact — look for a same-named source file next to it (e.g. a `.md` beside the
+  `sourceHtml` path), or for a "Generated from ..." marker inside the HTML itself.
 - **AI → human**: a responses JSON (what was fixed / declined / left as-is, and why) and, when the
   agent needs a decision it can't make on its own, question pins that show up directly on the
   page for the human to answer.
