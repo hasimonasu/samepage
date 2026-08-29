@@ -80,7 +80,8 @@ rendered artifact and an AI agent needs to act on that review.
 
 ```bash
 git clone https://github.com/<your-account>/samepage.git
-python3 samepage/samepage/cli.py your-doc.html --unit-selector body --label-format "Whole"
+cd samepage
+python3 samepage/cli.py your-doc.html --unit-selector body --label-format "Whole"
 open your-doc.html            # or: start / xdg-open
 ```
 
@@ -98,7 +99,7 @@ Then, in the browser:
 |---|---|
 | Injecting (agent / developer) | Python 3.9+ — no third-party packages |
 | Reviewing (human) | A modern browser that opens `file://` HTML (Chrome, Firefox, Safari, Edge) and clipboard access. No server, extension or account |
-| Optional | Playwright — only for the browser tests; the `markdown` package — only for `docs/build_readme_html.py` |
+| Optional | Playwright — for the browser tests and for regenerating the demo GIF; Pillow — only for `docs/build_demo_gif.py`; the `markdown` package — only for `docs/build_readme_html.py` |
 
 ## Install as a Claude Code skill
 

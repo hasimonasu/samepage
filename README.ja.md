@@ -16,9 +16,9 @@
 ## なぜ必要か
 
 AIがHTML成果物を作った場合でも、レビューは結局チャット上で場所を説明して直してもらう形に
-なりがちだ。samepageは、人が表示されたページに直接コメントできるようにし、AIには構造化JSON
-を渡して**原本**（HTMLが生成物なら生成元）を直させ、返信とAI自身の質問を同じページに書き戻す。
-合意が取れたら、レビュー層を除いたクリーンな公開用HTMLを書き出す。
+なりがちです。samepageは、人が表示されたページに直接コメントできるようにし、AIには構造化JSON
+を渡して**原本**（HTMLが生成物なら生成元）を直させ、返信とAI自身の質問を同じページに書き戻します。
+合意が取れたら、レビュー層を除いたクリーンな公開用HTMLを書き出します。
 
 ## これは何か
 
@@ -59,8 +59,8 @@ flowchart LR
 
 ## 他の手段との比較
 
-samepageはこれらを置き換えるものではない。人がレンダリング済みの成果物をレビューし、AI
-エージェントがそのレビュー結果を反映する必要がある場面のギャップを埋めるためのものだ。
+samepageはこれらを置き換えるものではありません。人がレンダリング済みの成果物をレビューし、AI
+エージェントがそのレビュー結果を反映する必要がある場面のギャップを埋めるためのものです。
 
 | | samepage | Google Docs / Notionのコメント | GitHub PRレビュー | Web注釈（Hypothesisなど） |
 |---|---|---|---|---|
@@ -75,7 +75,8 @@ samepageはこれらを置き換えるものではない。人がレンダリン
 
 ```bash
 git clone https://github.com/<your-account>/samepage.git
-python3 samepage/samepage/cli.py your-doc.html --unit-selector body --label-format "Whole"
+cd samepage
+python3 samepage/cli.py your-doc.html --unit-selector body --label-format "Whole"
 open your-doc.html            # または: start / xdg-open
 ```
 
@@ -93,7 +94,7 @@ open your-doc.html            # または: start / xdg-open
 |---|---|
 | 注入する側（エージェント／開発者） | Python 3.9以上 — サードパーティ製パッケージは不要 |
 | レビューする側（人） | `file://` のHTMLを開けるモダンブラウザ（Chrome, Firefox, Safari, Edge）とクリップボードへのアクセス。サーバー・拡張機能・アカウントは不要 |
-| 任意 | Playwright — ブラウザテストにのみ使用。`markdown` パッケージ — `docs/build_readme_html.py` にのみ使用 |
+| 任意 | Playwright — ブラウザテストとデモGIFの再生成に使用。Pillow — `docs/build_demo_gif.py` のみで使用。`markdown` パッケージ — `docs/build_readme_html.py` のみで使用 |
 
 ## Claude Code スキルとして導入する
 
@@ -188,35 +189,35 @@ SVG図を埋め込むHTMLを生成する側は、図中の各ノードの意味�
 
 **Q. HTMLファイルが原本なのか生成物なのか、どうやって見分ける？**
 `sourceHtml` のパスの隣に同名の `.md` などの生成元ファイルがあるか、HTML内に「Generated
-from ...」のような印がないかを確認する。原本ならそのHTMLを直接直し、生成物なら生成元を直して
-再生成する（SKILL.md §4 ルール1）。
+from ...」のような印がないかを確認します。原本ならそのHTMLを直接直し、生成物なら生成元を直して
+再生成します（SKILL.md §4 ルール1）。
 
 **Q. HTMLを再生成したらコメントの `path` が一致しなくなった。コメントは失われる？**
-失われない。`element` と `insertion-point` ターゲットには自動フォールバックがある。`element`
-は `path` が使えなければ `tag` + `nearText`（要素テキストの先頭60文字）で近い一致を探す。
+失われません。`element` と `insertion-point` ターゲットには自動フォールバックがあります。`element`
+は `path` が使えなければ `tag` + `nearText`（要素テキストの先頭60文字）で近い一致を探します。
 `insertion-point` は `afterPath` から `afterTag`+`nearText` にフォールバックし、それも
-失敗すれば `beforePath`/`beforeTag` 側から解決する。`diagram-node` は `nodeId` から
-`nodeLabel`、さらに `nearText` の順にフォールバックする。詳細は SKILL.md §4。
+失敗すれば `beforePath`/`beforeTag` 側から解決します。`diagram-node` は `nodeId` から
+`nodeLabel`、さらに `nearText` の順にフォールバックします。詳細は SKILL.md §4。
 
 **Q. コメントはどこに保存される？**
-ブラウザの `localStorage` に、キー `samepage:<doc>` で保存される（ブラウザのプロファイル
-ごと、どこにも同期されない）。書き出したJSONが唯一の永続的な記録であり、`--doc-id` でキーの
-`<doc>` 部分を制御できる（既定は入力ファイルのstem）。
+ブラウザの `localStorage` に、キー `samepage:<doc>` で保存されます（ブラウザのプロファイル
+ごと、どこにも同期されません）。書き出したJSONが唯一の永続的な記録であり、`--doc-id` でキーの
+`<doc>` 部分を制御できます（既定は入力ファイルのstem）。
 
 **Q. 既に注入済みのファイルにさらに注入するとどうなる？**
-その場でレビュー層が置き換わる（冪等）。再注入時に `--responses` / `--questions` の
-どちらか（または両方）を省略すると、対応する層は消える（常に直近に注入した内容だけが
-表示される）。
+その場でレビュー層が置き換わります（冪等）。再注入時に `--responses` / `--questions` の
+どちらか（または両方）を省略すると、対応する層は消えます（常に直近に注入した内容だけが
+表示されます）。
 
 **Q. SVG図中のノードにコメントできないのはなぜ？**
 そのSVG図を生成した側が `data-sp-node` をノードに振っていないため。CLI側はこの属性を自動で
-付与しない（意味的な単位を知っているのは生成側だけ）。上の「ドキュメント生成側向け」の節と
-`SKILL.md` §7.5 を参照。
+付与しません（意味的な単位を知っているのは生成側だけ）。上の「ドキュメント生成側向け」の節と
+`SKILL.md` §7.5 を参照してください。
 
 **Q. `--finalize` が未解決コメントを理由に拒否する。どうすればいい？**
-`--comments` にファイルを渡すと `open` の項目が報告されて中断する。レビュー側で解決するか、
-`--force` を付けて強行する。finalize後の出力先は既定で `<stem>.final.html`（`--out` で
-変更可能）。入力HTMLは変更されない。
+`--comments` にファイルを渡すと `open` の項目が報告されて中断します。レビュー側で解決するか、
+`--force` を付けて強行します。finalize後の出力先は既定で `<stem>.final.html`（`--out` で
+変更可能）。入力HTMLは変更されません。
 
 ## 開発
 
@@ -230,20 +231,20 @@ python3 -m pytest
 
 ## コントリビューション
 
-Issue・PRは歓迎する。バグ報告には、注入前のHTML（または最小の再現手順）と、書き出した
-コメントJSONを添付すること。
+Issue・PRは歓迎します。バグ報告には、注入前のHTML（または最小の再現手順）と、書き出した
+コメントJSONを添付してください。
 
-開発は `develop` ブランチで行う。`main` はリリースブランチで、マージはメンテナのみが行う。
-PRは `develop` に対して開くこと。
+開発は `develop` ブランチで行います。`main` はリリースブランチで、マージはメンテナのみが行います。
+PRは `develop` に対して開いてください。
 
-PRを出す前に `python3 -m pytest` を実行すること（ブラウザテストはPlaywrightがインストール
-されていれば実行され、なければスキップされる）。
+PRを出す前に `python3 -m pytest` を実行してください（ブラウザテストはPlaywrightがインストール
+されていれば実行され、なければスキップされます）。
 
 命名（`sp-` というCSSプレフィックス、`data-sp-*` 属性、マーカーコメント）は固定であり、
-`docs/design.md` を参照。
+`docs/design.md` を参照してください。
 
 デモの再生成: `python3 docs/build_demo_gif.py`。READMEのHTML版の再生成:
-`python3 docs/build_readme_html.py README.md README.html`。
+`python3 docs/build_readme_html.py README.ja.md README.ja.html`。
 
 ## ライセンス
 

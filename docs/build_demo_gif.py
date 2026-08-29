@@ -28,10 +28,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 CLI = REPO_ROOT / "samepage" / "cli.py"
 DEMO_SRC = REPO_ROOT / "docs" / "demo" / "sample.html"
 OUT_DIR = REPO_ROOT / "docs" / "images"
-SCRATCH = Path(
-    "/private/tmp/claude-501/-Users-hasegawanaoto-local-workspace-samepage/"
-    "8c9d1d87-7b82-42f6-a6be-59a82b0afd38/scratchpad"
-)
+SCRATCH = Path(tempfile.gettempdir())
 
 VIEWPORT = {"width": 1200, "height": 750}
 
