@@ -80,6 +80,26 @@ rendered artifact and an AI agent needs to act on that review.
 | Where fixes land | the original — the source, if generated | the document itself | the document itself | — |
 | Publishable output | `--finalize` strips the layer | — | — | — |
 
+## Try it on this README
+
+[`README.html`](README.html) is this page rendered as HTML with the samepage review layer already
+injected — the tool applied to its own documentation.
+
+```bash
+git clone https://github.com/hasimonasu/samepage.git
+cd samepage
+open README.html     # or: start / xdg-open. GitHub shows .html as source, so open it locally
+```
+
+Want more detail than this README gives, or a section rewritten for your situation? Comment on it
+directly: select the passage, press `a`, and say what you want — *"explain this for someone who
+has never used a coding agent"*, *"shorten this table"*, *"add a Windows example"*. Press `j`,
+paste the JSON into a coding agent running in your clone, and it will rewrite `README.md` to
+answer you and rebuild the HTML. The result is your own README, shaped by the questions you
+actually had.
+
+The Japanese page is [`README.ja.html`](README.ja.html).
+
 ## Quick start
 
 ```bash
@@ -251,8 +271,22 @@ otherwise they're skipped).
 Naming (the `sp-` CSS prefix, `data-sp-*` attributes, marker comments) is fixed — see
 `docs/design.md`.
 
-To rebuild the demo: `python3 docs/build_demo_gif.py`. To rebuild the README HTML:
-`python3 docs/build_readme_html.py README.md README.html`.
+To rebuild the demo: `python3 docs/build_demo_gif.py`.
+
+`README.html` / `README.ja.html` are tracked, so rebuild them after any README change:
+
+```bash
+pip install markdown
+python3 docs/build_readme_html.py README.md README.html
+python3 docs/build_readme_html.py README.ja.md README.ja.html
+python3 samepage/cli.py README.html --unit-selector body --label-format "Whole" \
+    --doc-id readme-en --no-source-path
+python3 samepage/cli.py README.ja.html --unit-selector body --label-format "Whole" \
+    --doc-id readme-ja --no-source-path
+```
+
+`--no-source-path` is required here — without it the absolute path of your own machine is baked
+into the committed HTML.
 
 ## License
 

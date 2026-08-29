@@ -75,6 +75,25 @@ samepageはこれらを置き換えるものではありません。人がレン
 | 修正の反映先 | 原本（生成物なら生成元） | ドキュメントそのもの | ドキュメントそのもの | — |
 | 公開用出力 | `--finalize` でレビュー層を除去 | — | — | — |
 
+## このREADME自体で試す
+
+[`README.html`](README.html) は、このページをHTML化し、samepageのレビュー層をあらかじめ注入した
+ものです（このツールを、このツール自身のドキュメントに適用したもの）。日本語版は
+[`README.ja.html`](README.ja.html) です。
+
+```bash
+git clone https://github.com/hasimonasu/samepage.git
+cd samepage
+open README.ja.html   # または start / xdg-open。GitHubは.htmlをソース表示するのでローカルで開く
+```
+
+このREADMEの説明では足りない、あるいは自分の状況に合わせて書き直してほしい箇所があれば、
+そこに直接コメントしてください。該当箇所を選択して `a` キー、要望を書く
+（例:「コーディングエージェントを使ったことがない人向けに説明して」「この表を短くして」
+「Windowsでの例を追加して」）。`j` キーでJSONをコピーし、cloneしたディレクトリで動いている
+コーディングエージェントに貼れば、`README.md` を書き換えて回答し、HTMLを再生成します。
+出来上がるのは、あなたが実際に抱いた疑問に沿って形を変えた、あなた専用のREADMEです。
+
 ## クイックスタート
 
 ```bash
@@ -247,8 +266,22 @@ PRを出す前に `python3 -m pytest` を実行してください（ブラウザ
 命名（`sp-` というCSSプレフィックス、`data-sp-*` 属性、マーカーコメント）は固定であり、
 `docs/design.md` を参照してください。
 
-デモの再生成: `python3 docs/build_demo_gif.py`。READMEのHTML版の再生成:
-`python3 docs/build_readme_html.py README.ja.md README.ja.html`。
+デモの再生成: `python3 docs/build_demo_gif.py`。
+
+`README.html` / `README.ja.html` はgit管理下にあるため、READMEを変更したら再生成してください:
+
+```bash
+pip install markdown
+python3 docs/build_readme_html.py README.md README.html
+python3 docs/build_readme_html.py README.ja.md README.ja.html
+python3 samepage/cli.py README.html --unit-selector body --label-format "Whole" \
+    --doc-id readme-en --no-source-path
+python3 samepage/cli.py README.ja.html --unit-selector body --label-format "Whole" \
+    --doc-id readme-ja --no-source-path
+```
+
+`--no-source-path` は必須です。付け忘れると、自分のマシンの絶対パスがコミットされるHTMLに
+焼き込まれます。
 
 ## ライセンス
 
