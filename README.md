@@ -43,7 +43,7 @@ runtime dependencies — a human only ever needs a browser and clipboard access.
 ```mermaid
 flowchart LR
     A[Human: opens injected HTML,<br/>selects text / elements,<br/>writes comments] -->|comment JSON<br/>copy → j| B[AI agent]
-    B -->|fixes the original<br/>(source, if generated)| C[Regenerate HTML]
+    B -->|"fixes the original<br/>(source, if generated)"| C[Regenerate HTML]
     C -->|--responses<br/>--questions| D[Human: sees replies,<br/>answers question pins]
     D -->|more comments,<br/>or all resolved| E{Consensus?}
     E -->|not yet| A
