@@ -13,6 +13,10 @@
 *Select text or an element, comment, press `j` — the JSON goes straight to your agent; replies
 and question pins come back onto the same page.*
 
+> The "Release notes" document in the demo is fictional sample content written for this
+> repository, as are the HTML files under `docs/demo/` and `tests/fixtures/`. They describe no
+> real product, project or organization.
+
 ## Why
 
 Even when an AI produces the HTML deliverable, "review" usually still means describing the
