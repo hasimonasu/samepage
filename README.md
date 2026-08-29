@@ -79,7 +79,7 @@ rendered artifact and an AI agent needs to act on that review.
 ## Quick start
 
 ```bash
-git clone https://github.com/<your-account>/samepage.git
+git clone https://github.com/hasimonasu/samepage.git
 cd samepage
 python3 samepage/cli.py your-doc.html --unit-selector body --label-format "Whole"
 open your-doc.html            # or: start / xdg-open
@@ -104,7 +104,7 @@ Then, in the browser:
 ## Install as a Claude Code skill
 
 ```bash
-git clone https://github.com/<your-account>/samepage.git ~/.claude/skills/samepage
+git clone https://github.com/hasimonasu/samepage.git ~/.claude/skills/samepage
 ```
 
 Once cloned there, Claude Code picks it up automatically. Say things like "make this reviewable"

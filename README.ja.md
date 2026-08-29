@@ -74,7 +74,7 @@ samepageはこれらを置き換えるものではありません。人がレン
 ## クイックスタート
 
 ```bash
-git clone https://github.com/<your-account>/samepage.git
+git clone https://github.com/hasimonasu/samepage.git
 cd samepage
 python3 samepage/cli.py your-doc.html --unit-selector body --label-format "Whole"
 open your-doc.html            # または: start / xdg-open
@@ -99,7 +99,7 @@ open your-doc.html            # または: start / xdg-open
 ## Claude Code スキルとして導入する
 
 ```bash
-git clone https://github.com/<your-account>/samepage.git ~/.claude/skills/samepage
+git clone https://github.com/hasimonasu/samepage.git ~/.claude/skills/samepage
 ```
 
 このパスにクローンしておけば Claude Code が自動的に認識する。「この資料にコメントできるように
