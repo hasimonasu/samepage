@@ -289,10 +289,34 @@ open your-doc.html            # or: start / xdg-open
 <h2 id="install-as-a-claude-code-skill">Install as a Claude Code skill</h2>
 <pre><code class="language-bash">git clone https://github.com/hasimonasu/samepage.git ~/.claude/skills/samepage
 </code></pre>
-<p>Once cloned there, Claude Code picks it up automatically. Say things like "make this reviewable"
-or "let people comment on this HTML" and it invokes <code>samepage/cli.py</code> for you — see <code>SKILL.md</code> for
-the full behavior it follows (default injection, when to adjust the selector, the JSON contract,
-how it replies and asks questions, and how it finalizes).</p>
+<p>Once cloned there, Claude Code picks it up automatically: the repository carries a
+<code>.claude-plugin/plugin.json</code>, so the folder loads as the <code>samepage</code> plugin with no marketplace and
+no install step. That single clone ships two skills.</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>Use it for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>samepage</code></td>
+<td>Injecting the review layer into an existing HTML file. Say "make this reviewable" or "let people comment on this HTML"</td>
+</tr>
+<tr>
+<td><code>grill-on-samepage</code></td>
+<td>Settling a design <em>before</em> code exists. It interviews you on a samepage page in rounds, and the agreed document becomes the project's source of truth. Say "let's nail down the design first"</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>skills/samepage/SKILL.md</code> and <code>skills/grill-on-samepage/SKILL.md</code> define the full behavior each
+one follows.</p>
+<blockquote>
+<p><strong>If you cloned this before the plugin manifest landed:</strong> the slash command is now
+<code>/samepage:samepage</code> rather than <code>/samepage</code>. Nothing else changes — the clone path is the same,
+and Claude still reaches for the skill on its own from the description.</p>
+</blockquote>
 <h2 id="cli-reference">CLI reference</h2>
 <pre><code>python3 samepage/cli.py &lt;input.html&gt; [options]
 </code></pre>
@@ -396,7 +420,7 @@ previously embedded — only the most recently injected set is ever shown.</p>
 </tbody>
 </table></div>
 <p>Full field-by-field resolution rules, including fallback order when a <code>path</code> or <code>nodeId</code> no
-longer matches, live in <code>SKILL.md</code> §4.</p>
+longer matches, live in <code>skills/samepage/SKILL.md</code> §4.</p>
 <h2 id="for-document-generators">For document generators</h2>
 <p>A generator that produces HTML with an embedded SVG diagram can make individual diagram nodes
 directly commentable by tagging the semantic <code>&lt;g&gt;</code> for each node:</p>
@@ -418,7 +442,7 @@ comparison, anything meant only for the review round — is tagged with <code>da
 the review is resolved, <code>--finalize</code> removes it along with the rest of the review layer:</p>
 <pre><code class="language-html">&lt;div data-sp-discussion&gt;Notes under discussion. Removed by --finalize.&lt;/div&gt;
 </code></pre>
-<p>See <code>SKILL.md</code> §7.5 and §8 for the complete conventions.</p>
+<p>See <code>skills/samepage/SKILL.md</code> §7.5 and §8 for the complete conventions.</p>
 <h2 id="privacy-note">Privacy note</h2>
 <p>By default, the injected page embeds <code>sourceHtml</code> (the absolute path to the file the layer was
 injected into) so a session that only receives the exported comment JSON can still find the file.
@@ -429,13 +453,13 @@ filesystem path.</p>
 <p><strong>Q. How do I tell whether an HTML file is the original or a generated artifact?</strong>
 Look for a same-named source file next to it (e.g. a <code>.md</code> beside the path in <code>sourceHtml</code>), or
 for a "Generated from ..." marker inside the HTML itself. If it's the original, edit the HTML
-directly; if it's generated, edit the source and regenerate (SKILL.md §4, rule 1).</p>
+directly; if it's generated, edit the source and regenerate (skills/samepage/SKILL.md §4, rule 1).</p>
 <p><strong>Q. I regenerated the HTML and a comment's <code>path</code> no longer matches — is the comment lost?</strong>
 No. <code>element</code> and <code>insertion-point</code> targets fall back automatically: <code>element</code> falls back from
 <code>path</code> to a nearby match using <code>tag</code> + <code>nearText</code> (the first 60 chars of the element's text);
 <code>insertion-point</code> falls back from <code>afterPath</code> to <code>afterTag</code>+<code>nearText</code>, and if that also fails,
 resolves from the <code>beforePath</code>/<code>beforeTag</code> side instead. <code>diagram-node</code> falls back from <code>nodeId</code>
-to <code>nodeLabel</code>, then to <code>nearText</code>. See SKILL.md §4.</p>
+to <code>nodeLabel</code>, then to <code>nearText</code>. See skills/samepage/SKILL.md §4.</p>
 <p><strong>Q. Where are comments stored?</strong>
 In the browser's <code>localStorage</code>, under the key <code>samepage:&lt;doc&gt;</code> — per browser profile, not synced
 anywhere. The exported JSON is the durable record; <code>--doc-id</code> controls the <code>&lt;doc&gt;</code> part of that
@@ -447,7 +471,7 @@ the most recently injected set is ever shown.</p>
 <p><strong>Q. Why can't I comment on a node in my SVG diagram?</strong>
 Because the generator that produced the diagram hasn't tagged its nodes with <code>data-sp-node</code> — the
 CLI never adds this attribute automatically; only the generator knows the semantic unit. See "For
-document generators" above and <code>SKILL.md</code> §7.5.</p>
+document generators" above and <code>skills/samepage/SKILL.md</code> §7.5.</p>
 <p><strong>Q. <code>--finalize</code> refuses because of unresolved comments — what now?</strong>
 Pass a <code>--comments</code> file: it reports any <code>open</code> items and aborts. Either resolve them in the
 review, or pass <code>--force</code> to finalize anyway. Finalized output defaults to <code>&lt;stem&gt;.final.html</code>
@@ -457,7 +481,21 @@ review, or pass <code>--force</code> to finalize anyway. Finalized output defaul
 </code></pre>
 <p>Browser-driven tests (<code>tests/test_browser.py</code>) additionally require Playwright
 (<code>pip install playwright &amp;&amp; playwright install chromium</code>); they're skipped automatically if
-Playwright isn't available.</p>
+Playwright isn't available. The builder tests (<code>tests/test_alignment_builder.py</code>) skip the same
+way without the <code>markdown</code> package.</p>
+<p>The generated files are rebuilt with:</p>
+<pre><code class="language-bash">pip install markdown
+python3 docs/build_readme_html.py README.md README.html
+python3 docs/build_readme_html.py README.ja.md README.ja.html
+python3 samepage/cli.py README.html --unit-selector body \
+    --label-format &quot;Whole&quot; --doc-id readme-en --no-source-path
+python3 samepage/cli.py README.ja.html --unit-selector body \
+    --label-format &quot;全体&quot; --doc-id readme-ja --no-source-path
+python3 docs/build_alignment_html.py docs/alignment/0001-grill-on-samepage.md
+python3 docs/build_alignment_html.py --index docs/alignment
+</code></pre>
+<p>CI runs exactly this and fails if any generated file is out of date, so <code>--no-source-path</code> is not
+optional: without it your absolute path ends up committed.</p>
 <h2 id="contributing">Contributing</h2>
 <p>Issues and PRs are welcome. For a bug report, attach the pre-injection HTML (or a minimal repro)
 and the exported comment JSON.</p>

@@ -106,7 +106,7 @@ td:first-child code, th:first-child code{
 }
 </style>
 </head>
-<body data-sp-unit="u1" data-sp-label="Whole" data-sp-index="1">
+<body data-sp-unit="u1" data-sp-label="全体" data-sp-index="1">
 <div class="sp-banner">この HTML は README.ja.md から自動生成されています — 編集は元の .md に対して行い、再生成してください。</div>
 <div class="sp-shell">
   <aside class="sp-toc-desktop"><p class="sp-toc-heading">目次</p><ul class="sp-toc-list"><li><a href="#_1">なぜ必要か</a></li><li><a href="#_2">これは何か</a></li><li><a href="#_3">動作の流れ</a></li><li><a href="#_4">他の手段との比較</a></li><li><a href="#readme">このREADME自体で試す</a></li><li><a href="#_5">クイックスタート</a></li><li><a href="#_6">動作要件</a></li><li><a href="#claude-code">Claude Code スキルとして導入する</a></li><li><a href="#cli">CLI リファレンス</a></li><li><a href="#_7">ターゲットの種類</a></li><li><a href="#svg">ドキュメント生成側向け: SVG図をコメント対象にする</a></li><li><a href="#_8">プライバシーに関する注意</a></li><li><a href="#faq">FAQ</a></li><li><a href="#_9">開発</a></li><li><a href="#_10">コントリビューション</a></li><li><a href="#_11">ライセンス</a></li></ul></aside>
@@ -284,10 +284,33 @@ open your-doc.html            # または: start / xdg-open
 <h2 id="claude-code">Claude Code スキルとして導入する</h2>
 <pre><code class="language-bash">git clone https://github.com/hasimonasu/samepage.git ~/.claude/skills/samepage
 </code></pre>
-<p>このパスにクローンしておけば Claude Code が自動的に認識する。「この資料にコメントできるように
-して」「HTMLにレビュー機能をつけて」のように頼めば <code>samepage/cli.py</code> を自動で呼び出す。
-実際の挙動（既定の注入方法・セレクタを調整すべき場面・JSONの契約・返信/質問の書き方・
-finalizeの手順）は <code>SKILL.md</code> に定義されている。</p>
+<p>このパスにクローンしておけば Claude Code が自動的に認識する。リポジトリが
+<code>.claude-plugin/plugin.json</code> を持っているため、このフォルダは <code>samepage</code> プラグインとして
+読み込まれる。marketplace もインストール手順も不要で、<strong>1回のクローンで2つのスキルが入る</strong>。</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>スキル</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>samepage</code></td>
+<td>既存のHTMLにレビュー層を注入する。「この資料にコメントできるようにして」「HTMLにレビュー機能をつけて」</td>
+</tr>
+<tr>
+<td><code>grill-on-samepage</code></td>
+<td>コードを書く前に設計を詰める。samepage の上でラウンド形式の面接を行い、合意した文書がプロジェクトのSSOTになる。「設計を詰めたい」</td>
+</tr>
+</tbody>
+</table></div>
+<p>実際の挙動は <code>skills/samepage/SKILL.md</code> と <code>skills/grill-on-samepage/SKILL.md</code> に定義されている。</p>
+<blockquote>
+<p><strong>プラグイン化より前にクローンしていた場合:</strong> スラッシュコマンドが <code>/samepage</code> から
+<code>/samepage:samepage</code> に変わる。それ以外は変わらない（クローン先のパスは同じで、説明文に
+よる自動起動も従来どおり）。</p>
+</blockquote>
 <h2 id="cli">CLI リファレンス</h2>
 <pre><code>python3 samepage/cli.py &lt;input.html&gt; [オプション]
 </code></pre>
@@ -391,7 +414,7 @@ finalizeの手順）は <code>SKILL.md</code> に定義されている。</p>
 </tbody>
 </table></div>
 <p><code>path</code> や <code>nodeId</code> が一致しなくなったときのフォールバック順を含む、フィールドごとの詳細な
-解決規則は <code>SKILL.md</code> §4 にある。</p>
+解決規則は <code>skills/samepage/SKILL.md</code> §4 にある。</p>
 <h2 id="svg">ドキュメント生成側向け: SVG図をコメント対象にする</h2>
 <p>SVG図を埋め込むHTMLを生成する側は、図中の各ノードの意味的な <code>&lt;g&gt;</code> に属性を振ることで、
 ノード単位で直接コメント可能にできる。</p>
@@ -414,7 +437,7 @@ finalizeの手順）は <code>SKILL.md</code> に定義されている。</p>
 これを除去する。</p>
 <pre><code class="language-html">&lt;div data-sp-discussion&gt;検討中のメモ。--finalize で除去される。&lt;/div&gt;
 </code></pre>
-<p>完全な規約は <code>SKILL.md</code> §7.5 と §8 を参照。</p>
+<p>完全な規約は <code>skills/samepage/SKILL.md</code> §7.5 と §8 を参照。</p>
 <h2 id="_8">プライバシーに関する注意</h2>
 <p>既定では、注入されたページに <code>sourceHtml</code>（レビュー層を注入したファイルの絶対パス）が
 埋め込まれる。これは、書き出したコメントJSONだけを受け取ったセッションでも対象ファイルを
@@ -425,13 +448,13 @@ finalizeの手順）は <code>SKILL.md</code> に定義されている。</p>
 <p><strong>Q. HTMLファイルが原本なのか生成物なのか、どうやって見分ける？</strong>
 <code>sourceHtml</code> のパスの隣に同名の <code>.md</code> などの生成元ファイルがあるか、HTML内に「Generated
 from ...」のような印がないかを確認します。原本ならそのHTMLを直接直し、生成物なら生成元を直して
-再生成します（SKILL.md §4 ルール1）。</p>
+再生成します（skills/samepage/SKILL.md §4 ルール1）。</p>
 <p><strong>Q. HTMLを再生成したらコメントの <code>path</code> が一致しなくなった。コメントは失われる？</strong>
 失われません。<code>element</code> と <code>insertion-point</code> ターゲットには自動フォールバックがあります。<code>element</code>
 は <code>path</code> が使えなければ <code>tag</code> + <code>nearText</code>（要素テキストの先頭60文字）で近い一致を探します。
 <code>insertion-point</code> は <code>afterPath</code> から <code>afterTag</code>+<code>nearText</code> にフォールバックし、それも
 失敗すれば <code>beforePath</code>/<code>beforeTag</code> 側から解決します。<code>diagram-node</code> は <code>nodeId</code> から
-<code>nodeLabel</code>、さらに <code>nearText</code> の順にフォールバックします。詳細は SKILL.md §4。</p>
+<code>nodeLabel</code>、さらに <code>nearText</code> の順にフォールバックします。詳細は skills/samepage/SKILL.md §4。</p>
 <p><strong>Q. コメントはどこに保存される？</strong>
 ブラウザの <code>localStorage</code> に、キー <code>samepage:&lt;doc&gt;</code> で保存されます（ブラウザのプロファイル
 ごと、どこにも同期されません）。書き出したJSONが唯一の永続的な記録であり、<code>--doc-id</code> でキーの
@@ -443,7 +466,7 @@ from ...」のような印がないかを確認します。原本ならそのHTM
 <p><strong>Q. SVG図中のノードにコメントできないのはなぜ？</strong>
 そのSVG図を生成した側が <code>data-sp-node</code> をノードに振っていないため。CLI側はこの属性を自動で
 付与しません（意味的な単位を知っているのは生成側だけ）。上の「ドキュメント生成側向け」の節と
-<code>SKILL.md</code> §7.5 を参照してください。</p>
+<code>skills/samepage/SKILL.md</code> §7.5 を参照してください。</p>
 <p><strong>Q. <code>--finalize</code> が未解決コメントを理由に拒否する。どうすればいい？</strong>
 <code>--comments</code> にファイルを渡すと <code>open</code> の項目が報告されて中断します。レビュー側で解決するか、
 <code>--force</code> を付けて強行します。finalize後の出力先は既定で <code>&lt;stem&gt;.final.html</code>（<code>--out</code> で
@@ -453,7 +476,21 @@ from ...」のような印がないかを確認します。原本ならそのHTM
 </code></pre>
 <p>ブラウザ駆動のテスト（<code>tests/test_browser.py</code>）は追加でPlaywright
 （<code>pip install playwright &amp;&amp; playwright install chromium</code>）が必要。Playwrightが無い環境では
-自動的にスキップされる。</p>
+自動的にスキップされる。ビルダーのテスト（<code>tests/test_alignment_builder.py</code>）も同様に、
+<code>markdown</code> が無ければスキップされる。</p>
+<p>生成物の再生成は以下:</p>
+<pre><code class="language-bash">pip install markdown
+python3 docs/build_readme_html.py README.md README.html
+python3 docs/build_readme_html.py README.ja.md README.ja.html
+python3 samepage/cli.py README.html --unit-selector body \
+    --label-format &quot;Whole&quot; --doc-id readme-en --no-source-path
+python3 samepage/cli.py README.ja.html --unit-selector body \
+    --label-format &quot;全体&quot; --doc-id readme-ja --no-source-path
+python3 docs/build_alignment_html.py docs/alignment/0001-grill-on-samepage.md
+python3 docs/build_alignment_html.py --index docs/alignment
+</code></pre>
+<p>CI はこれと同じ手順を実行し、生成物が古ければ fail する。<code>--no-source-path</code> は必須で、
+付け忘れるとローカルの絶対パスがコミットされる。</p>
 <h2 id="_10">コントリビューション</h2>
 <p>Issue・PRは歓迎します。バグ報告には、注入前のHTML（または最小の再現手順）と、書き出した
 コメントJSONを添付してください。</p>

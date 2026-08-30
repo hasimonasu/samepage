@@ -126,10 +126,20 @@ open your-doc.html            # または: start / xdg-open
 git clone https://github.com/hasimonasu/samepage.git ~/.claude/skills/samepage
 ```
 
-このパスにクローンしておけば Claude Code が自動的に認識する。「この資料にコメントできるように
-して」「HTMLにレビュー機能をつけて」のように頼めば `samepage/cli.py` を自動で呼び出す。
-実際の挙動（既定の注入方法・セレクタを調整すべき場面・JSONの契約・返信/質問の書き方・
-finalizeの手順）は `SKILL.md` に定義されている。
+このパスにクローンしておけば Claude Code が自動的に認識する。リポジトリが
+`.claude-plugin/plugin.json` を持っているため、このフォルダは `samepage` プラグインとして
+読み込まれる。marketplace もインストール手順も不要で、**1回のクローンで2つのスキルが入る**。
+
+| スキル | 用途 |
+|---|---|
+| `samepage` | 既存のHTMLにレビュー層を注入する。「この資料にコメントできるようにして」「HTMLにレビュー機能をつけて」 |
+| `grill-on-samepage` | コードを書く前に設計を詰める。samepage の上でラウンド形式の面接を行い、合意した文書がプロジェクトのSSOTになる。「設計を詰めたい」 |
+
+実際の挙動は `skills/samepage/SKILL.md` と `skills/grill-on-samepage/SKILL.md` に定義されている。
+
+> **プラグイン化より前にクローンしていた場合:** スラッシュコマンドが `/samepage` から
+> `/samepage:samepage` に変わる。それ以外は変わらない（クローン先のパスは同じで、説明文に
+> よる自動起動も従来どおり）。
 
 ## CLI リファレンス
 
@@ -169,7 +179,7 @@ python3 samepage/cli.py <input.html> [オプション]
 | `document` | 文書全体 | （なし） |
 
 `path` や `nodeId` が一致しなくなったときのフォールバック順を含む、フィールドごとの詳細な
-解決規則は `SKILL.md` §4 にある。
+解決規則は `skills/samepage/SKILL.md` §4 にある。
 
 ## ドキュメント生成側向け: SVG図をコメント対象にする
 
@@ -199,7 +209,7 @@ SVG図を埋め込むHTMLを生成する側は、図中の各ノードの意味�
 <div data-sp-discussion>検討中のメモ。--finalize で除去される。</div>
 ```
 
-完全な規約は `SKILL.md` §7.5 と §8 を参照。
+完全な規約は `skills/samepage/SKILL.md` §7.5 と §8 を参照。
 
 ## プライバシーに関する注意
 
@@ -214,14 +224,14 @@ SVG図を埋め込むHTMLを生成する側は、図中の各ノードの意味�
 **Q. HTMLファイルが原本なのか生成物なのか、どうやって見分ける？**
 `sourceHtml` のパスの隣に同名の `.md` などの生成元ファイルがあるか、HTML内に「Generated
 from ...」のような印がないかを確認します。原本ならそのHTMLを直接直し、生成物なら生成元を直して
-再生成します（SKILL.md §4 ルール1）。
+再生成します（skills/samepage/SKILL.md §4 ルール1）。
 
 **Q. HTMLを再生成したらコメントの `path` が一致しなくなった。コメントは失われる？**
 失われません。`element` と `insertion-point` ターゲットには自動フォールバックがあります。`element`
 は `path` が使えなければ `tag` + `nearText`（要素テキストの先頭60文字）で近い一致を探します。
 `insertion-point` は `afterPath` から `afterTag`+`nearText` にフォールバックし、それも
 失敗すれば `beforePath`/`beforeTag` 側から解決します。`diagram-node` は `nodeId` から
-`nodeLabel`、さらに `nearText` の順にフォールバックします。詳細は SKILL.md §4。
+`nodeLabel`、さらに `nearText` の順にフォールバックします。詳細は skills/samepage/SKILL.md §4。
 
 **Q. コメントはどこに保存される？**
 ブラウザの `localStorage` に、キー `samepage:<doc>` で保存されます（ブラウザのプロファイル
@@ -236,7 +246,7 @@ from ...」のような印がないかを確認します。原本ならそのHTM
 **Q. SVG図中のノードにコメントできないのはなぜ？**
 そのSVG図を生成した側が `data-sp-node` をノードに振っていないため。CLI側はこの属性を自動で
 付与しません（意味的な単位を知っているのは生成側だけ）。上の「ドキュメント生成側向け」の節と
-`SKILL.md` §7.5 を参照してください。
+`skills/samepage/SKILL.md` §7.5 を参照してください。
 
 **Q. `--finalize` が未解決コメントを理由に拒否する。どうすればいい？**
 `--comments` にファイルを渡すと `open` の項目が報告されて中断します。レビュー側で解決するか、
@@ -251,7 +261,25 @@ python3 -m pytest
 
 ブラウザ駆動のテスト（`tests/test_browser.py`）は追加でPlaywright
 （`pip install playwright && playwright install chromium`）が必要。Playwrightが無い環境では
-自動的にスキップされる。
+自動的にスキップされる。ビルダーのテスト（`tests/test_alignment_builder.py`）も同様に、
+`markdown` が無ければスキップされる。
+
+生成物の再生成は以下:
+
+```bash
+pip install markdown
+python3 docs/build_readme_html.py README.md README.html
+python3 docs/build_readme_html.py README.ja.md README.ja.html
+python3 samepage/cli.py README.html --unit-selector body \
+    --label-format "Whole" --doc-id readme-en --no-source-path
+python3 samepage/cli.py README.ja.html --unit-selector body \
+    --label-format "全体" --doc-id readme-ja --no-source-path
+python3 docs/build_alignment_html.py docs/alignment/0001-grill-on-samepage.md
+python3 docs/build_alignment_html.py --index docs/alignment
+```
+
+CI はこれと同じ手順を実行し、生成物が古ければ fail する。`--no-source-path` は必須で、
+付け忘れるとローカルの絶対パスがコミットされる。
 
 ## コントリビューション
 

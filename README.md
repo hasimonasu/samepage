@@ -132,10 +132,21 @@ Then, in the browser:
 git clone https://github.com/hasimonasu/samepage.git ~/.claude/skills/samepage
 ```
 
-Once cloned there, Claude Code picks it up automatically. Say things like "make this reviewable"
-or "let people comment on this HTML" and it invokes `samepage/cli.py` for you — see `SKILL.md` for
-the full behavior it follows (default injection, when to adjust the selector, the JSON contract,
-how it replies and asks questions, and how it finalizes).
+Once cloned there, Claude Code picks it up automatically: the repository carries a
+`.claude-plugin/plugin.json`, so the folder loads as the `samepage` plugin with no marketplace and
+no install step. That single clone ships two skills.
+
+| Skill | Use it for |
+|---|---|
+| `samepage` | Injecting the review layer into an existing HTML file. Say "make this reviewable" or "let people comment on this HTML" |
+| `grill-on-samepage` | Settling a design *before* code exists. It interviews you on a samepage page in rounds, and the agreed document becomes the project's source of truth. Say "let's nail down the design first" |
+
+`skills/samepage/SKILL.md` and `skills/grill-on-samepage/SKILL.md` define the full behavior each
+one follows.
+
+> **If you cloned this before the plugin manifest landed:** the slash command is now
+> `/samepage:samepage` rather than `/samepage`. Nothing else changes — the clone path is the same,
+> and Claude still reaches for the skill on its own from the description.
 
 ## CLI reference
 
@@ -175,7 +186,7 @@ Every comment or question target has a `kind`:
 | `document` | The document as a whole | (none) |
 
 Full field-by-field resolution rules, including fallback order when a `path` or `nodeId` no
-longer matches, live in `SKILL.md` §4.
+longer matches, live in `skills/samepage/SKILL.md` §4.
 
 ## For document generators
 
@@ -204,7 +215,7 @@ the review is resolved, `--finalize` removes it along with the rest of the revie
 <div data-sp-discussion>Notes under discussion. Removed by --finalize.</div>
 ```
 
-See `SKILL.md` §7.5 and §8 for the complete conventions.
+See `skills/samepage/SKILL.md` §7.5 and §8 for the complete conventions.
 
 ## Privacy note
 
@@ -219,14 +230,14 @@ filesystem path.
 **Q. How do I tell whether an HTML file is the original or a generated artifact?**
 Look for a same-named source file next to it (e.g. a `.md` beside the path in `sourceHtml`), or
 for a "Generated from ..." marker inside the HTML itself. If it's the original, edit the HTML
-directly; if it's generated, edit the source and regenerate (SKILL.md §4, rule 1).
+directly; if it's generated, edit the source and regenerate (skills/samepage/SKILL.md §4, rule 1).
 
 **Q. I regenerated the HTML and a comment's `path` no longer matches — is the comment lost?**
 No. `element` and `insertion-point` targets fall back automatically: `element` falls back from
 `path` to a nearby match using `tag` + `nearText` (the first 60 chars of the element's text);
 `insertion-point` falls back from `afterPath` to `afterTag`+`nearText`, and if that also fails,
 resolves from the `beforePath`/`beforeTag` side instead. `diagram-node` falls back from `nodeId`
-to `nodeLabel`, then to `nearText`. See SKILL.md §4.
+to `nodeLabel`, then to `nearText`. See skills/samepage/SKILL.md §4.
 
 **Q. Where are comments stored?**
 In the browser's `localStorage`, under the key `samepage:<doc>` — per browser profile, not synced
@@ -241,7 +252,7 @@ the most recently injected set is ever shown.
 **Q. Why can't I comment on a node in my SVG diagram?**
 Because the generator that produced the diagram hasn't tagged its nodes with `data-sp-node` — the
 CLI never adds this attribute automatically; only the generator knows the semantic unit. See "For
-document generators" above and `SKILL.md` §7.5.
+document generators" above and `skills/samepage/SKILL.md` §7.5.
 
 **Q. `--finalize` refuses because of unresolved comments — what now?**
 Pass a `--comments` file: it reports any `open` items and aborts. Either resolve them in the
@@ -256,7 +267,25 @@ python3 -m pytest
 
 Browser-driven tests (`tests/test_browser.py`) additionally require Playwright
 (`pip install playwright && playwright install chromium`); they're skipped automatically if
-Playwright isn't available.
+Playwright isn't available. The builder tests (`tests/test_alignment_builder.py`) skip the same
+way without the `markdown` package.
+
+The generated files are rebuilt with:
+
+```bash
+pip install markdown
+python3 docs/build_readme_html.py README.md README.html
+python3 docs/build_readme_html.py README.ja.md README.ja.html
+python3 samepage/cli.py README.html --unit-selector body \
+    --label-format "Whole" --doc-id readme-en --no-source-path
+python3 samepage/cli.py README.ja.html --unit-selector body \
+    --label-format "全体" --doc-id readme-ja --no-source-path
+python3 docs/build_alignment_html.py docs/alignment/0001-grill-on-samepage.md
+python3 docs/build_alignment_html.py --index docs/alignment
+```
+
+CI runs exactly this and fails if any generated file is out of date, so `--no-source-path` is not
+optional: without it your absolute path ends up committed.
 
 ## Contributing
 

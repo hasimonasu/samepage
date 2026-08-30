@@ -13,6 +13,8 @@ publishable HTML.
 ## Repository layout
 
 ```
+.claude-plugin/
+  plugin.json             manifest: the repo loads as the `samepage` plugin
 samepage/                 Python package (also runnable as a script)
   cli.py                  entry point: python3 samepage/cli.py <html> [options]
   assets.py               builds the injected block from assets/
@@ -20,20 +22,37 @@ samepage/                 Python package (also runnable as a script)
     samepage.js           review layer runtime (vanilla JS, no deps)
     samepage.css          review layer styles
     panel.html            panel / popup markup injected into <body>
+skills/
+  samepage/SKILL.md       inject a review layer into an existing HTML file
+  grill-on-samepage/SKILL.md
+                          run a grilling session on an ALIGNMENT document
 tests/                    pytest (+ playwright browser tests)
 docs/                     design notes, this file
-SKILL.md                  Claude Code skill definition (repo root = skill dir)
+  build_readme_html.py    README.md -> README.html
+  build_alignment_html.py ALIGNMENT .md -> .html, and INDEX.md
+  alignment/              ALIGNMENT documents: the agreed design decisions
 README.md / README.ja.md
 ```
 
-Clone the repository into `~/.claude/skills/samepage` and it works as a skill
-as-is: `python3 ${CLAUDE_SKILL_DIR}/samepage/cli.py <html> ...`.
+Clone the repository into `~/.claude/skills/samepage` and it works as-is. The
+manifest makes the folder load as `samepage@skills-dir`, a plugin bundling both
+skills, with no marketplace and no install step. Skills inside a plugin use
+`${CLAUDE_PLUGIN_ROOT}` — which points at the repository root — to reach the
+shared script: `python3 ${CLAUDE_PLUGIN_ROOT}/samepage/cli.py <html> ...`.
+
+Adding the manifest is what makes both skills reachable from one clone; a
+`SKILL.md` at the repository root would be ignored once the manifest exists, so
+the samepage skill lives at `skills/samepage/SKILL.md`. The consequence for
+people who cloned earlier is that the slash command is now
+`/samepage:samepage`. Invocation by description is unaffected.
 
 ## Naming (fixed — do not deviate)
 
 | Concept | Name |
 |---|---|
-| Project / CLI / skill name | `samepage` |
+| Project / CLI / plugin name | `samepage` |
+| Skill names | `samepage`, `grill-on-samepage` |
+| ALIGNMENT document / its index | `docs/alignment/NNNN-slug.md`, `docs/alignment/INDEX.md` |
 | HTML marker comments (idempotent block) | `<!-- samepage:begin -->` … `<!-- samepage:end -->` |
 | Unit attributes (set by CLI) | `data-sp-unit`, `data-sp-label`, `data-sp-index` |
 | Diagram node attributes (set by generator) | `data-sp-node`, `data-sp-label` |
@@ -44,7 +63,7 @@ as-is: `python3 ${CLAUDE_SKILL_DIR}/samepage/cli.py <html> ...`.
 | localStorage key | `samepage:<doc>` (config field `storageKey`) |
 | CSS class / id prefix | `sp-` (e.g. `sp-panel`, `sp-mark`, `sp-qpin`, `sp-node-halo`) |
 | Export JSON `_skill` | `"samepage"` |
-| Export JSON `_howto` / `_rules` | English text (rules table in SKILL.md is the source of truth) |
+| Export JSON `_howto` / `_rules` | English text (rules table in skills/samepage/SKILL.md is the source of truth) |
 | Finalized output default | `<stem>.final.html` |
 
 Keyboard shortcuts are unchanged: `a` add comment, `e` element pick,
@@ -52,7 +71,7 @@ Keyboard shortcuts are unchanged: `a` add comment, `e` element pick,
 
 ## JSON contracts
 
-Unchanged from the behaviour described in SKILL.md §4 (export), §6 (responses),
+Unchanged from the behaviour described in skills/samepage/SKILL.md §4 (export), §6 (responses),
 §7 (questions). Field names (`targets[].kind` = `text-range` | `element` |
 `insertion-point` | `diagram-node` | `document`, `action`, `status`, `answers`,
 …) are kept verbatim so existing agent-side tooling keeps working; only the
@@ -60,7 +79,10 @@ Unchanged from the behaviour described in SKILL.md §4 (export), §6 (responses)
 
 ## Non-goals
 
-- No Markdown → HTML conversion.
+- The CLI does no Markdown → HTML conversion. It only ever injects into, or
+  strips from, HTML it is handed. (The `docs/` builders do convert Markdown,
+  but they are separate scripts for two specific documents — the README and
+  ALIGNMENT documents — and are not part of the CLI or the skills.)
 - No server. Everything runs from `file://`.
 - The CLI never adds `data-sp-node` to SVG automatically (only the generator
   knows the semantic unit).
