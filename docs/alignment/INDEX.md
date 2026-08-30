@@ -10,7 +10,7 @@
 | 文書 | タイトル | 状態 | 合意日 | 決定 |
 |---|---|---|---|---|
 | [`0001-grill-on-samepage.md`](0001-grill-on-samepage.md) | grill-on-samepage の設計 | 合意済み | 2026-08-30 | 15/15 確定 |
-| [`0002-remaining-work.md`](0002-remaining-work.md) | 残作業の進め方 | 合意済み | 2026-08-30 | 4/4 確定 |
+| [`0002-remaining-work.md`](0002-remaining-work.md) | 残作業の進め方 | ラウンド2 | — | 4/6 確定 |
 
 ## 決定
 
@@ -35,6 +35,8 @@
 | W-3 | docs ジョブの README 検査 | 確定 | 後で AI が再生成 | [`0002-remaining-work.md`](0002-remaining-work.md) |
 | W-2 | 新規成果物のコミット | 確定 | 段階ごとに分ける | [`0002-remaining-work.md`](0002-remaining-work.md) |
 | W-4 | samepage のファイル権限 | 確定 | cli.py を直す | [`0002-remaining-work.md`](0002-remaining-work.md) |
+| W-5 | CLAUDE.md の更新 | frontier | — | [`0002-remaining-work.md`](0002-remaining-work.md) |
+| W-6 | develop への統合 | frontier | — | [`0002-remaining-work.md`](0002-remaining-work.md) |
 
 ## 用語
 
