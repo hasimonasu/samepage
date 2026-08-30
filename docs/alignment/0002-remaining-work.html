@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>残作業の進め方</title>
+<style>
+:root{
+  --sp-bg:#fbfdfc; --sp-fg:#1c2624; --sp-muted:#5b6c69;
+  --sp-accent:#0f766e; --sp-accent-dark:#0b5750; --sp-border:#d7e6e3;
+  --sp-kbd-bg:#eef2f1; --sp-kbd-border:#c3d3d0; --sp-banner-bg:#eef7f5;
+  --sp-banner-fg:#0b5750; --sp-amber:#b5790c; --sp-red:#b3261e;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--sp-bg); color:var(--sp-fg); line-height:1.7; font-size:16px;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;}
+a{color:var(--sp-accent-dark);}
+.sp-banner{background:var(--sp-banner-bg); color:var(--sp-banner-fg); text-align:center;
+  padding:.6rem 1rem; font-size:.85rem; border-bottom:1px solid var(--sp-border);}
+.sp-shell{max-width:920px; margin:0 auto; padding:0 1.25rem 5rem;}
+.sp-hero{padding:2.6rem 0 1rem; border-bottom:1px solid var(--sp-border);}
+.sp-hero .sp-eyebrow{font-size:.78rem; text-transform:uppercase; letter-spacing:.09em;
+  color:var(--sp-muted); margin:0 0 .5rem;}
+.sp-hero h1{font-size:2rem; margin:0 0 .5rem; letter-spacing:-.01em;}
+.sp-hero p{margin:.35rem 0; color:var(--sp-muted);}
+.sp-meta{font-size:.85rem; color:var(--sp-muted); margin-top:1rem;}
+.sp-meta span{margin-right:1.2rem;}
+h2{font-size:1.4rem; margin:3rem 0 1rem; padding-top:.6rem;
+   border-top:1px solid var(--sp-border); scroll-margin-top:1rem;}
+h3{font-size:1.12rem; margin:2.2rem 0 .6rem; color:var(--sp-accent-dark); scroll-margin-top:1rem;}
+p{margin:.8rem 0;} ul,ol{margin:.6rem 0; padding-left:1.4rem;} li{margin:.35rem 0;}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  background:var(--sp-kbd-bg); border:1px solid var(--sp-kbd-border);
+  border-radius:4px; padding:.1rem .35rem; font-size:.88em;}
+pre{background:#1e293b; color:#e2e8f0; border-radius:8px; padding:1rem 1.1rem;
+  overflow-x:auto; font-size:.86rem; line-height:1.55;}
+pre code{background:transparent; border:none; padding:0; color:inherit;}
+.table-wrap{overflow-x:auto; margin:1rem 0; border:1px solid var(--sp-border); border-radius:8px;}
+table{border-collapse:collapse; width:100%; font-size:.9rem;}
+th,td{padding:.6rem .8rem; border-bottom:1px solid var(--sp-border);
+  text-align:left; vertical-align:top;}
+thead th{background:#f1f8f6; color:var(--sp-accent-dark); font-weight:600;}
+tbody tr:last-child td{border-bottom:none;}
+tbody td:first-child{font-weight:600; color:var(--sp-accent-dark); white-space:nowrap;}
+td.sp-v{font-weight:700; color:#0b5750; white-space:nowrap;}
+.sp-discussion{background:#f6f4fb; border:1px dashed #9b8fc4; padding:1rem 1.15rem;
+  margin:1.4rem 0; border-radius:8px; font-size:.93rem;}
+.sp-discussion h3{margin-top:0; color:#5b4b96;}
+.sp-tree-wrap{margin:1.4rem 0 .6rem;}
+.sp-tree-svg{display:block; max-width:100%; height:auto;}
+.sp-tree-svg a [data-sp-node]{cursor:pointer;}
+</style>
+</head>
+<body>
+<div class="sp-banner">0002-remaining-work.md から生成 — 編集は .md 側に対して行い、再生成してください。</div>
+<div class="sp-shell">
+<header class="sp-hero">
+  <p class="sp-eyebrow">Alignment 0002</p>
+  <h1>残作業の進め方</h1>
+  <p>ALIGNMENT 0001 で合意した実装計画のうち、step 1 と step 6 が未着手のまま残っている。その解除方法と、成果物の扱いを決める。</p>
+  <p class="sp-meta"><span>状態 合意済み</span><span>合意日 2026-08-30</span><span>ブランチ feature/grill-on-samepage</span><span>決定 4 件</span></p>
+</header>
+<article class="sp-article"><h2 id="0">0. この文書について</h2>
+<p>これは ALIGNMENT 0001（grill-on-samepage の設計）の<strong>実装フェーズで発生した作業判断</strong>を扱う 2 つ目のセッション。設計そのものは 0001 で合意済みで、ここで蒸し返さない。</p>
+<p>この文書は <code>docs/build_alignment_html.py</code> で生成されている。0001 は手書き HTML だったので、<strong>これがビルダーの実地検証を兼ねる</strong>。</p>
+<h2 id="design-tree">design tree</h2>
+<div class="sp-tree-wrap"><svg class="sp-tree-svg" viewBox="0 0 574 242" role="img" aria-label="design tree">
+  <defs>
+    <marker id="sp-ar-0002-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0f766e"/></marker>
+    <marker id="sp-ar-0002-dep" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8fa5a1"/></marker>
+  </defs>
+  <line x1="91" y1="72" x2="287" y2="142" stroke="#0f766e" stroke-width="2" marker-end="url(#sp-ar-0002-ok)"/>
+  <a href="#w1"><g data-sp-node="W-1" data-sp-label="W-1 未コミット作業の扱い（確定: AI が develop でコミット）"><rect x="0" y="16" width="182" height="56" rx="10" ry="10" fill="#e6f5f3" stroke="#0f766e" stroke-width="2"/><text text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" y="40"><tspan x="91" font-size="12" fill="#0f2a28">W-1 未コミット作業の扱い</tspan><tspan x="91" dy="17" font-size="11" fill="#0b5750" font-weight="700">✓ AI が develop でコミット</tspan></text></g></a>
+  <a href="#w3"><g data-sp-node="W-3" data-sp-label="W-3 docs ジョブの README 検査（確定: 後で AI が再生成）"><rect x="196" y="146" width="182" height="56" rx="10" ry="10" fill="#e6f5f3" stroke="#0f766e" stroke-width="2"/><text text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" y="170"><tspan x="287" font-size="12" fill="#0f2a28">W-3 docs ジョブの README …</tspan><tspan x="287" dy="17" font-size="11" fill="#0b5750" font-weight="700">✓ 後で AI が再生成</tspan></text></g></a>
+  <a href="#w2"><g data-sp-node="W-2" data-sp-label="W-2 新規成果物のコミット（確定: 段階ごとに分ける）"><rect x="196" y="16" width="182" height="56" rx="10" ry="10" fill="#e6f5f3" stroke="#0f766e" stroke-width="2"/><text text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" y="40"><tspan x="287" font-size="12" fill="#0f2a28">W-2 新規成果物のコミット</tspan><tspan x="287" dy="17" font-size="11" fill="#0b5750" font-weight="700">✓ 段階ごとに分ける</tspan></text></g></a>
+  <a href="#w4"><g data-sp-node="W-4" data-sp-label="W-4 samepage のファイル権限（確定: cli.py を直す）"><rect x="392" y="16" width="182" height="56" rx="10" ry="10" fill="#e6f5f3" stroke="#0f766e" stroke-width="2"/><text text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" y="40"><tspan x="483" font-size="12" fill="#0f2a28">W-4 samepage のファイル権限</tspan><tspan x="483" dy="17" font-size="11" fill="#0b5750" font-weight="700">✓ cli.py を直す</tspan></text></g></a>
+  <g><rect x="0" y="214" width="14" height="14" rx="3" fill="#e6f5f3" stroke="#0f766e" stroke-width="2"/><text x="22" y="225" font-size="12" fill="#5b6c69" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif">確定（4）</text></g>
+</svg></div>
+<h2 id="1">1. 決定</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>決定</th>
+<th>結論</th>
+<th>根拠</th>
+<th>実施</th>
+</tr>
+</thead>
+<tbody>
+<tr id="w1">
+<td>W-1<br>未コミット作業の扱い</td>
+<td>AI が develop で<br>コミットする</td>
+<td>4 択のうち「AI がコミットしてよい」を選択。付帯質問「Copy JSON は develop でコミットしたい。可能？」への答えは<strong>可能</strong>。作業ツリーの変更はブランチに属さないので、develop でコミットしてから feature を早送りすれば両方に入る。<br><strong>却下:</strong> stash は <code>SKILL.md</code> の移動と README の書き換えが絡むため復元時に衝突しうる。step 1/6 の先送りは <code>${CLAUDE_PLUGIN_ROOT}</code> 前提で書いた grill スキルを試せないままにする</td>
+<td><code>8d1bad8</code> を develop に作成し、feature を早送り</td>
+</tr>
+<tr id="w2">
+<td>W-2<br>新規成果物のコミット</td>
+<td>段階ごとに<br>分ける</td>
+<td>0001 の実装計画の段階と対応づけ、各コミットメッセージに根拠となる決定 ID を書けば SSOT とコードが相互参照できる。revert の単位も小さい</td>
+<td>W-1 と W-4 が段階を増やしたため 5 → 8 コミット</td>
+</tr>
+<tr id="w3">
+<td>W-3<br>docs ジョブの<br>README 検査</td>
+<td>W-1 の後に<br>AI が再生成</td>
+<td>順序を守れば「あなたの作業の一部を AI が作る」問題が起きない。D-12 で得た「README.html の鮮度も検査できる」利点を捨てずに済む<br><strong>却下:</strong> 検査を外す / <code>continue-on-error</code> は、どちらも赤いまま放置される状態を作る</td>
+<td>W-1 のコミット後に再生成し、ドキュメント同期のコミットに同梱</td>
+</tr>
+<tr id="w4">
+<td>W-4<br>samepage の<br>ファイル権限</td>
+<td><code>cli.py</code> を直す</td>
+<td><code>.final.html</code> は <code>skills/samepage/SKILL.md</code> §8 で「配布・公開する側」と定義された成果物なので、既定で他者が読めないのは仕様と実装の食い違い。<code>_write_atomic</code> が <code>mkstemp</code> の 0600 のまま、<code>copymode</code> を既存ファイルにしか適用していなかった</td>
+<td>新規出力時は umask に従うよう修正。回帰テスト 2 件を追加</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="2">2. 実施結果</h2>
+<p>0001 の実装計画 6 段階は<strong>すべて完了</strong>した。</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>順</th>
+<th>作業</th>
+<th>状態</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>プラグイン化（<code>.claude-plugin/plugin.json</code> + <code>SKILL.md</code> を <code>skills/samepage/</code> へ）</td>
+<td>完了</td>
+</tr>
+<tr>
+<td>2</td>
+<td>ビルダー <code>docs/build_alignment_html.py</code></td>
+<td>完了</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>skills/grill-on-samepage/SKILL.md</code></td>
+<td>完了</td>
+</tr>
+<tr>
+<td>4</td>
+<td>CI の <code>docs</code> ジョブ</td>
+<td>完了</td>
+</tr>
+<tr>
+<td>5</td>
+<td>0001 を <code>.md</code> へ移行してビルダーで再生成</td>
+<td>完了</td>
+</tr>
+<tr>
+<td>6</td>
+<td>ドキュメント同期（README ×2 + 生成 HTML ×2 + <code>design.md</code>）</td>
+<td>完了</td>
+</tr>
+</tbody>
+</table></div>
+<p>step 1 と 6 が着手できずにいたのは、どちらもあなたの未コミット作業と同じファイルに触るためだった。W-1 でその解除方法が決まり、着手できるようになった。当時の状態:</p>
+<pre><code> M README.html          ← step 6 の対象
+ M README.ja.html       ← step 6 の対象
+ M README.ja.md         ← step 6 の対象
+ M README.md            ← step 6 の対象
+ M SKILL.md             ← step 1 で skills/samepage/ へ移動する対象
+ M samepage/assets/panel.html, samepage.css, samepage.js
+ M tests/test_browser.py
+ M docs/images/demo.gif, demo.png
+</code></pre>
+<p><strong>step 1 は途中まで進めることができない。</strong> 実測のとおり、マニフェストを置いた時点でルートの <code>SKILL.md</code> は無視される（<code>Skills (2)</code> → <code>skills/</code> を外すと <code>Skills (0)</code>）。<code>plugin.json</code> だけ先に置くと samepage スキルが動かなくなる。そのため W-1 の解除を待つ必要があった。</p>
+<h3 id="_1">プラグイン化の実機検証</h3>
+<p>リポジトリを一時的に <code>~/.claude/skills/</code> へシンボリックリンクして確認した。</p>
+<pre><code>$ claude plugin details samepage@skills-dir
+samepage 0.1.0
+  Source: samepage@skills-dir
+Component inventory
+  Skills (2)  grill-on-samepage, samepage
+</code></pre>
+<p><strong>2 つのスキルが 1 クローンで読み込まれる</strong>ことを確認済み（D-3 のとおり）。検証用のシンボリックリンクは削除済み。</p>
+<h2 id="3">3. 判断の記録（合意時点の材料）</h2>
+<h3 id="w1">W-1. 未コミット作業の扱い</h3>
+<p>step 1 と 6 のブロックを解除する方法。</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>選択肢</th>
+<th>利点</th>
+<th>欠点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>あなたがコミットする</strong></td>
+<td>最も安全。作業の帰属が正しく、あなたのコミットメッセージで履歴に残る。私は差分の意図を推測しなくてよい</td>
+<td>私が待つことになる</td>
+</tr>
+<tr>
+<td><strong>私がコミットする</strong></td>
+<td>一手で先に進む</td>
+<td><strong>他人の作業を AI がコミットすることになる。</strong> <code>samepage.js</code> の 47 行の変更、<code>test_browser.py</code> の変更、デモ画像の再生成の意図を私は把握していない。要約を書けない</td>
+</tr>
+<tr>
+<td><strong>stash して進める</strong></td>
+<td>ファイルを触らずに step 1/6 を進められる</td>
+<td>stash は事故のもと。<code>SKILL.md</code> の移動と README の書き換えが絡むので、復元時に衝突しうる。あなたの作業が一時的に消える</td>
+</tr>
+<tr>
+<td><strong>step 1/6 を当面やらない</strong></td>
+<td>何も壊さない。今ある成果物だけで止める</td>
+<td>D-3 が未実施のまま。<code>${CLAUDE_PLUGIN_ROOT}</code> を前提に書いた <code>skills/grill-on-samepage/SKILL.md</code> が動かないので、<strong>作った grill スキルを実際に試せない</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>推奨: あなたがコミットする。</strong> 他人の変更を要約なしにコミットするのは避けたい、というのが理由です。<code>samepage.js</code> の 47 行が何を意図した変更なのかは、あなたにしか書けません。</p>
+<h3 id="w2">W-2. 新規成果物のコミット</h3>
+<p>私が作ったファイルは全て新規で、あなたの作業と重なりません（<code>.github/workflows/test.yml</code> のみ既存ファイルへの追記）。</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>選択肢</th>
+<th>利点</th>
+<th>欠点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>段階ごとに分ける</strong></td>
+<td>0001 の実装計画の段階と 1:1 で対応し、あとから「どの決定がどのコミットになったか」を追える。revert の単位が小さい</td>
+<td>コミットが 4〜5 個になる</td>
+</tr>
+<tr>
+<td><strong>1 コミットにまとめる</strong></td>
+<td>履歴が簡潔。機能として不可分ではある</td>
+<td>どの決定の実装かが本文でしか分からない</td>
+</tr>
+<tr>
+<td><strong>コミットしない</strong></td>
+<td>あなたが内容を見てから判断できる</td>
+<td>作業ツリーが膨らみ続ける</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>推奨: 段階ごとに分ける。</strong> ビルダー / スキル定義 / テスト / CI / 合意文書、の 5 つ。各コミットメッセージに根拠となる決定 ID（D-5、D-13 など）を書けば、SSOT とコードが相互参照できます。</p>
+<h3 id="w3">W-3. docs ジョブの README 検査</h3>
+<p>追加した <code>docs</code> ジョブは<strong>現状 fail します</strong>。<code>README.html</code> があなたの <code>.md</code> 変更に対して古いためです（生成し直すと差分が出ることを確認済み。ファイルは触っていません）。これは D-12 で「README.html の鮮度検査も同じジョブに乗せる」に合意した結果、意図どおり検出されているものです。</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>選択肢</th>
+<th>利点</th>
+<th>欠点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>README を再生成して同梱</strong></td>
+<td>ジョブが通る。生成物が最新になる</td>
+<td>生成物はあなたの <code>.md</code> 変更に依存するので、<strong>私が再生成するとあなたの作業の一部を私が作ったことになる</strong>。W-1 と同じ問題</td>
+</tr>
+<tr>
+<td><strong>README 検査を外す</strong></td>
+<td>今すぐ通る。alignment 文書だけ検査する</td>
+<td>D-12 で得た「ついでに README も検査できる」という利点を捨てる。README.html が古いまま気づけない状態に戻る</td>
+</tr>
+<tr>
+<td><strong><code>continue-on-error</code> にする</strong></td>
+<td>落ちても止まらない</td>
+<td>検査が事実上無効になる。赤いまま放置される典型</td>
+</tr>
+<tr>
+<td><strong>そのまま fail させておく</strong></td>
+<td>何も曲げない。W-1 が解決すれば自然に直る</td>
+<td>それまで CI が赤い</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>推奨: README を再生成して同梱、ただし W-1 であなたがコミットした後に私がやる。</strong> 順序を守れば W-1 の問題は起きません。W-1 が「あなたがコミットする」なら、その直後に私が再生成して W-2 の CI コミットに含めます。</p>
+<h3 id="w4">W-4. samepage のファイル権限</h3>
+<p><code>--finalize</code> で新規パスに出力すると、ファイルが <code>0600</code> で作られます。<code>_write_atomic</code> が <code>mkstemp</code>（常に 0600）で作ったあと、<code>copymode</code> を<strong>既存ファイルにしか適用しない</strong>ためです。今回の <code>0001-grill-on-samepage.final.html</code> も 0600 で生成され、手で <code>chmod 644</code> しました。</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>選択肢</th>
+<th>利点</th>
+<th>欠点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>cli.py</code> を直す</strong></td>
+<td><code>.final.html</code> は SKILL.md §8 で「配布・公開する側」と定義されている成果物なので、<strong>0600 はその用途を壊している</strong>。修正は数行。<code>cli.py</code> はあなたが変更中のファイルに含まれないので衝突しない</td>
+<td>0001 の合意範囲外の変更。samepage 本体に触ることになる</td>
+</tr>
+<tr>
+<td><strong>issue として残す</strong></td>
+<td>範囲を守れる。優先度を別途判断できる</td>
+<td>直るまで finalize のたびに手で chmod が要る</td>
+</tr>
+<tr>
+<td><strong>何もしない</strong></td>
+<td>追加作業ゼロ</td>
+<td>同上。かつ忘れる</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>推奨: <code>cli.py</code> を直す。</strong> 範囲外ではありますが、finalize の出力は「配布するもの」と明記されている以上、既定で他者が読めないのは仕様と実装の食い違いです。ただしこれは私の判断ではなくあなたの判断なので、範囲を守るほうを選ぶなら issue に落とします。</p>
+<h2 id="3_1">3. 参考: 完了分の検証結果</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>検証</th>
+<th>結果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>パーサ契約</td>
+<td>規約違反 9 種をすべて拒否（未知の状態、確定なのに決定なし、確定以外に決定あり、ID 重複、奇数インデント、親なしインデント、不明な依存先、フィールド不足、非該当行）</td>
+</tr>
+<tr>
+<td>生成の決定性</td>
+<td>2 回生成してバイト一致。CI の鮮度ゲートが機能する</td>
+</tr>
+<tr>
+<td>テスト</td>
+<td>全 83 件通過（既存 58 + 新規 26）</td>
+</tr>
+<tr>
+<td>依存の切り分け</td>
+<td><code>markdown</code> 不在の unit ジョブ相当で 26 件 skip、ありで 26 件 pass</td>
+</tr>
+<tr>
+<td>Python 互換</td>
+<td><code>requires-python = "&gt;=3.9"</code> に対し構文互換を確認</td>
+</tr>
+</tbody>
+</table></div>
+<p>テストのガードには一度バグを入れました。ビルダーは <code>markdown</code> 不在時に <code>sys.exit(1)</code> するため、import は <code>ImportError</code> ではなく <code>SystemExit</code> を投げます。<code>ImportError</code> だけを捕まえていたので、そのままなら unit ジョブが 5 バージョンとも壊れていました。修正済みで、両環境を実測しています。</p></article>
+</div>
+</body>
+</html>
