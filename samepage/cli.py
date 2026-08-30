@@ -529,6 +529,14 @@ def _write_atomic(path, text):
         # gets handed to people or served over the web).
         if path.exists():
             shutil.copymode(str(path), tmp)
+        else:
+            # Brand-new output, such as --finalize writing <stem>.final.html.
+            # That file is the copy meant to be distributed, so leaving it at
+            # mkstemp's 0600 would make it unreadable to everyone else. Follow
+            # the process umask, the way a plain open() would.
+            umask = os.umask(0)
+            os.umask(umask)
+            os.chmod(tmp, 0o666 & ~umask)
         os.replace(tmp, str(path))
     except BaseException:
         if os.path.exists(tmp):

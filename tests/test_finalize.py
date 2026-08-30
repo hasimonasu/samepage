@@ -1,5 +1,7 @@
 """--finalize (publishable clean HTML output) tests."""
 import json
+import os
+import stat
 from pathlib import Path
 
 import pytest
@@ -232,3 +234,29 @@ def test_finalize_out_writes_to_custom_path(tmp_path):
     assert not (tmp_path / "sample.final.html").exists()
     out = custom.read_text(encoding="utf-8")
     assert "samepage" not in out
+
+
+def _umask_mode():
+    umask = os.umask(0)
+    os.umask(umask)
+    return 0o666 & ~umask
+
+
+def test_finalize_output_is_readable_by_others(tmp_path):
+    """--finalize writes the copy meant to be distributed (SKILL.md section 8,
+    rule 5), so a brand-new output file must follow the umask instead of
+    staying at the 0600 mkstemp gives it."""
+    dst = _injected(tmp_path)
+    out = tmp_path / "sample.final.html"
+    assert not out.exists()
+    assert cli.main([str(dst), "--finalize"]) == 0
+    assert stat.S_IMODE(out.stat().st_mode) == _umask_mode()
+
+
+def test_finalize_preserves_the_mode_of_an_existing_output(tmp_path):
+    dst = _injected(tmp_path)
+    out = tmp_path / "custom.final.html"
+    out.write_text("placeholder", encoding="utf-8")
+    os.chmod(str(out), 0o640)
+    assert cli.main([str(dst), "--finalize", "--out", str(out)]) == 0
+    assert stat.S_IMODE(out.stat().st_mode) == 0o640
