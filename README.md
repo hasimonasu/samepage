@@ -113,7 +113,8 @@ Then, in the browser:
 
 1. Select text and press `a` (or click 💬) to add a comment. Press `e` to pick an element, an
    insertion point, or a diagram node instead of a text range.
-2. Press `c` to open the comment panel, `j` to copy the export JSON to the clipboard.
+2. Press `c` to open the comment panel, then `j` — or click the panel's "📋 Copy JSON" button —
+   to copy the export JSON to the clipboard.
 3. Paste that JSON into your coding agent's chat. It carries its own instructions, so a plain
    paste — with no extra explanation — is enough for the agent to act on it.
 

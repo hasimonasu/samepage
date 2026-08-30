@@ -70,6 +70,8 @@
   border:1px solid #0f766e;background:#eef0fb;color:#0f766e;cursor:pointer;
 }
 .sp-panel-json button + button{margin-top:6px;}
+/* The one-click copy is the primary way out of the panel, so it's filled. */
+.sp-panel-json .sp-json-copy-direct{background:#0f766e;color:#fff;font-weight:700;}
 .sp-item{border:1px solid #e4e6ea;border-radius:6px;padding:10px;margin-bottom:10px;cursor:pointer;color:#1f2430;}
 .sp-item:hover{background:#f7f8fb;}
 .sp-item.resolved{opacity:.55;}

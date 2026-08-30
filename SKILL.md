@@ -84,7 +84,8 @@ practice even for `<h2>`-delimited reports.
 6. `c` toggles the comment list. Comments can also be edited from the list.
 7. If the AI has planted a question pin (❓) in the body, answer it by clicking a choice or
    typing free text (see section 7).
-8. In the list, click "📋 Show JSON" → "Copy".
+8. In the list, click "📋 Copy JSON" to copy the export JSON in one click (same as the `j` key),
+   or "👁 Show JSON" → "Copy" to look it over first.
 9. Paste the JSON to Claude Code.
 
 ## 4. JSON contract and how to read it (a rule set — don't apply it loosely)

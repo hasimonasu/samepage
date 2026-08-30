@@ -18,6 +18,7 @@
   var panelCount = document.getElementById('spPanelCount');
   var panelList = document.getElementById('spPanelList');
   var jsonBtn = document.getElementById('spJsonBtn');
+  var jsonCopyDirectBtn = document.getElementById('spJsonCopyDirect');
   var jsonModal = document.getElementById('spJsonModal');
   var jsonOverlay = jsonModal.querySelector('.sp-json-overlay');
   var jsonText = document.getElementById('spJsonText');
@@ -1261,23 +1262,25 @@
   jsonBtn.addEventListener('click', openJsonModal);
   jsonCloseBtn.addEventListener('click', closeJsonModal);
   jsonOverlay.addEventListener('click', closeJsonModal);
-  // Shared by the modal's Copy button and the 'j' keyboard shortcut.
+  // Shared by the modal's Copy button, the panel's Copy JSON button and the 'j' shortcut.
+  // The execCommand fallback copies from a throwaway off-screen textarea rather than #spJsonText:
+  // the direct-copy paths run with the modal closed, and a display:none textarea can't be selected.
   function copyJsonToClipboard(text, onDone){
-    function markCopied(){
+    function fallbackCopy(){
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;top:0;left:-9999px;opacity:0;';
+      document.body.appendChild(ta);
+      ta.select();
+      try{ document.execCommand('copy'); }catch(e){}
+      document.body.removeChild(ta);
       if(onDone) onDone();
     }
     if(navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(text).then(markCopied).catch(function(){
-        jsonText.focus();
-        jsonText.select();
-        try{ document.execCommand('copy'); }catch(e){}
-        markCopied();
-      });
+      navigator.clipboard.writeText(text).then(function(){ if(onDone) onDone(); }).catch(fallbackCopy);
     } else {
-      jsonText.focus();
-      jsonText.select();
-      try{ document.execCommand('copy'); }catch(e){}
-      markCopied();
+      fallbackCopy();
     }
   }
   jsonCopyBtn.addEventListener('click', function(){
@@ -1286,18 +1289,41 @@
       setTimeout(function(){ jsonCopyBtn.textContent = 'Copy'; }, 1500);
     });
   });
-  // 'j' keyboard shortcut: copy the export JSON straight to the clipboard, without requiring
-  // the modal to be opened first. Briefly flashes the badge for feedback.
-  function copyJsonShortcut(){
+  // Copy the export JSON straight to the clipboard, without requiring the modal to be opened
+  // first. Shared by the panel's Copy JSON button and the 'j' shortcut. copied===false means
+  // there was nothing to copy yet.
+  function copyJsonDirect(onDone){
     var hasAnswers = answers.some(function(a){ return a.answer || a.note; });
-    if(comments.length===0 && !hasAnswers) return;
-    var text = buildJson();
-    copyJsonToClipboard(text, function(){
-      var prev = badge.textContent;
-      badge.textContent = '✓ Copied';
-      setTimeout(function(){ renderBadge(); }, 1200);
+    if(comments.length===0 && !hasAnswers){
+      if(onDone) onDone(false);
+      return;
+    }
+    copyJsonToClipboard(buildJson(), function(){
+      if(onDone) onDone(true);
     });
   }
+  var JSON_COPY_DIRECT_LABEL = jsonCopyDirectBtn.textContent;
+  var JSON_COPY_FLASH_MS = 1500;
+  var jsonCopyFlashTimer = null;
+  // Flash the result on both the badge and the panel's Copy JSON button, whichever route the copy
+  // came from: the open panel covers the badge, so a badge-only flash is invisible exactly when the
+  // panel is in use, and a button-only flash is invisible when the panel is closed.
+  function flashJsonCopied(copied){
+    jsonCopyDirectBtn.textContent = copied ? '✓ Copied' : 'No comments yet';
+    if(copied) badge.textContent = '✓ Copied';
+    clearTimeout(jsonCopyFlashTimer);   // a second copy restarts the flash instead of cutting it short
+    jsonCopyFlashTimer = setTimeout(function(){
+      jsonCopyDirectBtn.textContent = JSON_COPY_DIRECT_LABEL;
+      renderBadge();
+    }, JSON_COPY_FLASH_MS);
+  }
+  // 'j' keyboard shortcut.
+  function copyJsonShortcut(){
+    copyJsonDirect(flashJsonCopied);
+  }
+  jsonCopyDirectBtn.addEventListener('click', function(){
+    copyJsonDirect(flashJsonCopied);
+  });
 
   // ---- whole-document comment (a remark that doesn't point at a specific spot) ----
   docCommentBtn.addEventListener('click', function(){

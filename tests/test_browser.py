@@ -343,3 +343,109 @@ def test_reload_restores_comments_from_local_storage(tmp_path, page):
     page.wait_for_selector("mark.sp-mark")
     assert page.locator("mark.sp-mark").count() == 1
     assert page.locator("#spPanelCount").inner_text() == "1"
+
+
+# navigator.clipboard isn't reliably usable on file:// under headless Chromium, so the
+# direct-copy tests stub writeText and assert on what the page hands it.
+CLIPBOARD_STUB = """() => {
+    window.__spCopied = null;
+    const stub = {writeText: (t) => { window.__spCopied = t; return Promise.resolve(); }};
+    try {
+        Object.defineProperty(navigator, 'clipboard', {value: stub, configurable: true});
+    } catch (e) {
+        navigator.clipboard = stub;
+    }
+}"""
+
+
+def test_panel_copy_button_copies_json_without_opening_modal(tmp_path, page):
+    path = build_page(tmp_path)
+    open_file(page, path)
+    page.evaluate(CLIPBOARD_STUB)
+
+    page.evaluate(
+        """() => {
+            const p = document.getElementById('scope-p1');
+            const text = p.firstChild;
+            const idx = text.nodeValue.indexOf('internal pilot users');
+            const range = document.createRange();
+            range.setStart(text, idx);
+            range.setEnd(text, idx + 'internal pilot users'.length);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }"""
+    )
+    page.dispatch_event("#scope-p1", "mouseup")
+    page.wait_for_timeout(100)
+    page.keyboard.press("a")
+    page.wait_for_selector("#spPopupText", state="visible")
+    page.fill("#spPopupText", "Is this the final scope decision?")
+    page.keyboard.press("Enter")
+    page.wait_for_selector("mark.sp-mark")
+
+    page.click("#spBadge")   # open the panel (focus is still in the comment box, so 'c' would type)
+    page.click("#spJsonCopyDirect")
+    page.wait_for_function(
+        "() => document.getElementById('spJsonCopyDirect').textContent.includes('Copied')"
+    )
+
+    parsed = json.loads(page.evaluate("() => window.__spCopied"))
+    assert parsed["_skill"] == "samepage"
+    assert len(parsed["comments"]) == 1
+    # the point of the button: same payload as "Show JSON" → "Copy", without the modal
+    assert page.evaluate(
+        "() => document.getElementById('spJsonModal').classList.contains('open')"
+    ) is False
+
+
+def test_panel_copy_button_reports_when_there_is_nothing_to_copy(tmp_path, page):
+    path = build_page(tmp_path)
+    open_file(page, path)
+    page.evaluate(CLIPBOARD_STUB)
+
+    page.keyboard.press("c")
+    page.click("#spJsonCopyDirect")
+    page.wait_for_function(
+        "() => document.getElementById('spJsonCopyDirect').textContent === 'No comments yet'"
+    )
+    assert page.evaluate("() => window.__spCopied") is None
+
+
+def test_j_shortcut_flashes_the_panel_button_too(tmp_path, page):
+    """The open panel covers the badge, so 'j' has to report through the button as well."""
+    path = build_page(tmp_path)
+    open_file(page, path)
+    page.evaluate(CLIPBOARD_STUB)
+
+    page.evaluate(
+        """() => {
+            const p = document.getElementById('scope-p1');
+            const text = p.firstChild;
+            const idx = text.nodeValue.indexOf('internal pilot users');
+            const range = document.createRange();
+            range.setStart(text, idx);
+            range.setEnd(text, idx + 'internal pilot users'.length);
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }"""
+    )
+    page.dispatch_event("#scope-p1", "mouseup")
+    page.wait_for_timeout(100)
+    page.keyboard.press("a")
+    page.wait_for_selector("#spPopupText", state="visible")
+    page.fill("#spPopupText", "Is this the final scope decision?")
+    page.keyboard.press("Enter")
+    page.wait_for_selector("mark.sp-mark")
+
+    page.click("#spBadge")   # open the panel (focus is still in the comment box, so 'c' would type)
+    page.keyboard.press("j")
+    page.wait_for_function(
+        "() => document.getElementById('spJsonCopyDirect').textContent.includes('Copied')"
+    )
+    assert json.loads(page.evaluate("() => window.__spCopied"))["_skill"] == "samepage"
+    # and the label goes back on its own
+    page.wait_for_function(
+        "() => document.getElementById('spJsonCopyDirect').textContent.includes('Copy JSON')"
+    )
