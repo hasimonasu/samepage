@@ -1,0 +1,10 @@
+{
+  "name": "samepage",
+  "version": "0.1.0",
+  "description": "A removable review-comment layer for static HTML, and a grilling loop that runs on top of it.",
+  "author": { "name": "Naoto Hasegawa" },
+  "homepage": "https://github.com/hasimonasu/samepage",
+  "repository": "https://github.com/hasimonasu/samepage",
+  "license": "MIT",
+  "keywords": ["review", "html", "comments", "grilling", "alignment", "ssot"]
+}

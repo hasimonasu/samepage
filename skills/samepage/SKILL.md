@@ -14,7 +14,7 @@ description: |
   point between elements, whole-document comments, reverse AI-to-human question pins, and
   splitting off a review-layer-free publishable HTML with `--finalize` once everything is
   resolved. Does not do Markdown-to-HTML conversion — it only calls the existing `cli.py`.
-allowed-tools: Bash(python3 ${CLAUDE_SKILL_DIR}/samepage/cli.py *)
+allowed-tools: Bash(python3 ${CLAUDE_PLUGIN_ROOT}/samepage/cli.py *)
 ---
 
 # Add review comments to an existing HTML file
@@ -28,17 +28,18 @@ Inject using `body` as the unit element. This works on any HTML unconditionally 
 exists), and is also the right answer for HTML with no other natural unit element (the common
 case).
 
-The script is at `samepage/cli.py`, next to this SKILL.md. If the path below hasn't been resolved
-to an absolute path and still shows the literal variable, resolve it relative to this SKILL.md's
-own location. If it still can't be found (e.g. in an environment like Cowork where only this
-SKILL.md's instructions were imported and the bundled files aren't present locally), look for
-`samepage/cli.py` inside any connected folder (often laid out as `samepage/samepage/cli.py`). If
-it's nowhere to be found, ask the user to connect the skill folder that contains the script. Never
-reimplement or inline the script's logic — the injected JS/CSS assets bundled with it are the
-source of truth.
+The script is at `samepage/cli.py` in the plugin root, two levels above this SKILL.md
+(`skills/samepage/SKILL.md`). `${CLAUDE_PLUGIN_ROOT}` expands to that root; if the path below
+hasn't been resolved and still shows the literal variable, resolve it relative to this SKILL.md's
+own location instead (`../../samepage/cli.py`). If it still can't be found (e.g. in an environment
+like Cowork where only this SKILL.md's instructions were imported and the bundled files aren't
+present locally), look for `samepage/cli.py` inside any connected folder (often laid out as
+`samepage/samepage/cli.py`). If it's nowhere to be found, ask the user to connect the folder that
+contains the script. Never reimplement or inline the script's logic — the injected JS/CSS assets
+bundled with it are the source of truth.
 
 ```bash
-python3 ${CLAUDE_SKILL_DIR}/samepage/cli.py \
+python3 ${CLAUDE_PLUGIN_ROOT}/samepage/cli.py \
     <HTML> --unit-selector body --label-format "Whole"
 ```
 
@@ -206,7 +207,7 @@ got which reply and what changed.
 | 3 | Re-injecting without `--responses` clears the response layer (only the most recent set of fixes is ever shown) |
 
 ```bash
-python3 ${CLAUDE_SKILL_DIR}/samepage/cli.py \
+python3 ${CLAUDE_PLUGIN_ROOT}/samepage/cli.py \
     <HTML> --unit-selector body --label-format "Whole" --responses replies.json
 ```
 
@@ -246,7 +247,7 @@ separate JSON from comments (human-to-AI), injected via `--questions`.
   only
 
 ```bash
-python3 ${CLAUDE_SKILL_DIR}/samepage/cli.py \
+python3 ${CLAUDE_PLUGIN_ROOT}/samepage/cli.py \
     <HTML> --unit-selector body --label-format "Whole" --questions questions.json
 ```
 
@@ -296,7 +297,7 @@ Once every comment in the list is `resolved` (consensus reached), write out a pu
 with the review layer and discussion blocks stripped, to a separate file.
 
 ```bash
-python3 ${CLAUDE_SKILL_DIR}/samepage/cli.py <HTML> --finalize --comments comments.json
+python3 ${CLAUDE_PLUGIN_ROOT}/samepage/cli.py <HTML> --finalize --comments comments.json
 ```
 
 | # | Rule |
