@@ -59,7 +59,7 @@ td.sp-v{font-weight:700; color:#0b5750; white-space:nowrap;}
   <p class="sp-eyebrow">Alignment 0002</p>
   <h1>残作業の進め方</h1>
   <p>ALIGNMENT 0001 で合意した実装計画のうち、step 1 と step 6 が未着手のまま残っている。その解除方法と、成果物の扱いを決める。</p>
-  <p class="sp-meta"><span>状態 ラウンド2</span><span>ブランチ feature/grill-on-samepage</span><span>決定 6 件</span></p>
+  <p class="sp-meta"><span>状態 合意済み</span><span>合意日 2026-08-31</span><span>ブランチ feature/grill-on-samepage</span><span>決定 6 件</span></p>
 </header>
 <article class="sp-article"><h2 id="0">0. この文書について</h2>
 <p>これは ALIGNMENT 0001（grill-on-samepage の設計）の<strong>実装フェーズで発生した作業判断</strong>を扱う 2 つ目のセッション。設計そのものは 0001 で合意済みで、ここで蒸し返さない。</p>
@@ -75,10 +75,9 @@ td.sp-v{font-weight:700; color:#0b5750; white-space:nowrap;}
   <a href="#w3"><g><rect x="392" y="146" width="182" height="56" rx="10" ry="10" fill="#e6f5f3" stroke="#0f766e" stroke-width="2"/><text text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" y="170"><tspan x="483" font-size="12" fill="#0f2a28">W-3 docs ジョブの README …</tspan><tspan x="483" dy="17" font-size="11" fill="#0b5750" font-weight="700">✓ 後で AI が再生成</tspan></text></g></a>
   <a href="#w2"><g><rect x="196" y="16" width="182" height="56" rx="10" ry="10" fill="#e6f5f3" stroke="#0f766e" stroke-width="2"/><text text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" y="40"><tspan x="287" font-size="12" fill="#0f2a28">W-2 新規成果物のコミット</tspan><tspan x="287" dy="17" font-size="11" fill="#0b5750" font-weight="700">✓ 段階ごとに分ける</tspan></text></g></a>
   <a href="#w4"><g><rect x="392" y="16" width="182" height="56" rx="10" ry="10" fill="#e6f5f3" stroke="#0f766e" stroke-width="2"/><text text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" y="40"><tspan x="483" font-size="12" fill="#0f2a28">W-4 samepage のファイル権限</tspan><tspan x="483" dy="17" font-size="11" fill="#0b5750" font-weight="700">✓ cli.py を直す</tspan></text></g></a>
-  <a href="#w5"><g><rect x="588" y="16" width="182" height="56" rx="10" ry="10" fill="#fdf3e0" stroke="#b5790c" stroke-width="2"/><text text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" y="40"><tspan x="679" font-size="12" fill="#5a3d05">W-5 CLAUDE.md の更新</tspan><tspan x="679" dy="17" font-size="11" fill="#b5790c" font-weight="700">❓ frontier</tspan></text></g></a>
-  <a href="#w6"><g><rect x="784" y="16" width="182" height="56" rx="10" ry="10" fill="#fdf3e0" stroke="#b5790c" stroke-width="2"/><text text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" y="40"><tspan x="875" font-size="12" fill="#5a3d05">W-6 develop への統合</tspan><tspan x="875" dy="17" font-size="11" fill="#b5790c" font-weight="700">❓ frontier</tspan></text></g></a>
-  <g><rect x="0" y="214" width="14" height="14" rx="3" fill="#e6f5f3" stroke="#0f766e" stroke-width="2"/><text x="22" y="225" font-size="12" fill="#5b6c69" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif">確定（4）</text></g>
-  <g><rect x="100" y="214" width="14" height="14" rx="3" fill="#fdf3e0" stroke="#b5790c" stroke-width="2"/><text x="122" y="225" font-size="12" fill="#5b6c69" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif">frontier（2）</text></g>
+  <a href="#w5"><g><rect x="588" y="16" width="182" height="56" rx="10" ry="10" fill="#e6f5f3" stroke="#0f766e" stroke-width="2"/><text text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" y="40"><tspan x="679" font-size="12" fill="#0f2a28">W-5 CLAUDE.md の更新</tspan><tspan x="679" dy="17" font-size="11" fill="#0b5750" font-weight="700">✓ パス修正 + SSOT 条項</tspan></text></g></a>
+  <a href="#w6"><g><rect x="784" y="16" width="182" height="56" rx="10" ry="10" fill="#e6f5f3" stroke="#0f766e" stroke-width="2"/><text text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif" y="40"><tspan x="875" font-size="12" fill="#0f2a28">W-6 develop への統合</tspan><tspan x="875" dy="17" font-size="11" fill="#0b5750" font-weight="700">✓ AI がマージ、push はしない</tspan></text></g></a>
+  <g><rect x="0" y="214" width="14" height="14" rx="3" fill="#e6f5f3" stroke="#0f766e" stroke-width="2"/><text x="22" y="225" font-size="12" fill="#5b6c69" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif">確定（6）</text></g>
 </svg></div>
 <h2 id="1">1. 決定</h2>
 <div class="table-wrap"><table>
@@ -180,8 +179,33 @@ Component inventory
   Skills (2)  grill-on-samepage, samepage
 </code></pre>
 <p><strong>2 つのスキルが 1 クローンで読み込まれる</strong>ことを確認済み（D-3 のとおり）。検証用のシンボリックリンクは削除済み。</p>
-<h2 id="3">3. 今回のラウンド</h2>
-<p>実装が終わったことで 2 つ問える状態になった。どちらも上流の決定が片付くまで問えなかったもの。</p>
+<h2 id="3">3. 統合フェーズの決定</h2>
+<p>実装が終わったことで問える状態になった 2 件。どちらも上流が片付くまで問えなかった。</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>決定</th>
+<th>結論</th>
+<th>根拠</th>
+<th>実施</th>
+</tr>
+</thead>
+<tbody>
+<tr id="w5">
+<td>W-5<br>CLAUDE.md の更新</td>
+<td>パス修正 +<br>SSOT 条項を追加</td>
+<td>索引を作っても、それを読めと書いていなければ誰も読まない。D-6 と D-11 で索引を作った意味は、次のセッションが SSOT から始められることにある。加えて <code>SKILL.md</code> のパスが移動後の実態と合っていなかった</td>
+<td>「設計上の SSOT」節を新設し、取り消し手順への導線を追加。命名契約のパスを <code>skills/samepage/SKILL.md</code> に修正。生成物が CI で検査されることも明記</td>
+</tr>
+<tr id="w6">
+<td>W-6<br>develop への統合</td>
+<td>AI がマージする<br>push はしない</td>
+<td><code>CLAUDE.md</code> の「PR 作成やマージは提案までに留める」が <code>develop</code> にも及ぶかが曖昧で、解釈はメンテナのものなので推測せず確認した。結果は「<code>develop</code> へのマージは AI が行ってよい / push はしない」</td>
+<td>feature を develop に早送りマージ。push はしていない。<strong>同じ曖昧さで次も聞かずに済むよう、<code>CLAUDE.md</code> のブランチ運用を明示的に書き直した</strong>（W-5 のコミットに同梱）</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="w5">W-5. CLAUDE.md の更新</h3>
 <h3 id="w5">W-5. CLAUDE.md の更新</h3>
 <p><code>CLAUDE.md</code> は AI 向けのリポジトリ運用ルールで、今回の変更で 2 箇所が実態と合わなくなった。</p>
 <ul>
@@ -215,6 +239,7 @@ Component inventory
 </tbody>
 </table></div>
 <p><strong>推奨: パス修正 + SSOT の条項を追加。</strong> 「設計上の判断に迷ったら <code>docs/alignment/INDEX.md</code> を見る。そこで確定している決定を勝手に覆さない」の 2 行で足ります。索引を作ったのに誰も参照しないのが一番もったいない。</p>
+<p><strong>採用。</strong> 実際には取り消し手順への導線も足しました（覆すなという規則だけだと、覆すべき場面での行き先が無いため）。</p>
 <h3 id="w6">W-6. develop への統合</h3>
 <p><code>feature/grill-on-samepage</code> に 8 コミットある。<code>develop</code> には Copy JSON の 1 コミットだけ。</p>
 <p><code>CLAUDE.md</code> は「<code>main</code> へのマージ・直接コミット・push は AI は行わない」と定めていますが、<code>develop</code> への統合については明示がありません。最後の一文「PR 作成やマージは提案までに留める」を広く読むなら、<code>develop</code> へのマージも私はやらないほうがよい、と読めます。<strong>この解釈はあなたが決めることなので、聞きます。</strong></p>
@@ -245,6 +270,7 @@ Component inventory
 </tbody>
 </table></div>
 <p><strong>推奨: feature のまま置く。</strong> <code>CLAUDE.md</code> の趣旨は「統合の判断はメンテナが持つ」だと読めるので、私からは動かさないのが安全です。マージしてよいなら明示してください。</p>
+<p><strong>推奨は採られなかった。</strong>「AI が develop にマージしてよい。push はしないで」との回答。私の読みは慎重すぎたことになります。曖昧な規則を毎回解釈し直さずに済むよう、<code>CLAUDE.md</code> のブランチ運用を明示に書き換えました。</p>
 <h2 id="4">4. 判断の記録（合意時点の材料）</h2>
 <h3 id="w1">W-1. 未コミット作業の扱い</h3>
 <p>step 1 と 6 のブロックを解除する方法。</p>
