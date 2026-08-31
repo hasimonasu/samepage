@@ -70,7 +70,7 @@ samepageはこれらを置き換えるものではありません。人がレン
 |---|---|---|---|---|
 | コメント対象 | 任意の静的HTML、表示された状態そのまま | そのサービス自身のドキュメント | テキストの差分 | 任意のWebページ |
 | サーバー・アカウント | 不要 | 必要 | 必要 | 必要 |
-| AIへのフィードバック伝達 | 1つの自己完結したJSONをチャットに貼るだけ | 手動コピーかbot連携 | 手動コピーかbot連携 | 手動コピーかbot連携 |
+| AIへのフィードバック伝達 | 1つの自己完結したJSONをチャットに貼るだけ | 専用の連携がなければ手動コピー | 専用の連携がなければ手動コピー | 専用の連携がなければ手動コピー |
 | AI→人への質問 | 同じページ上の質問ピン | コメント返信 | コメント返信 | コメント返信 |
 | 修正の反映先 | 原本（生成物なら生成元） | ドキュメントそのもの | ドキュメントそのもの | — |
 | 公開用出力 | `--finalize` でレビュー層を除去 | — | — | — |
@@ -127,8 +127,8 @@ git clone https://github.com/hasimonasu/samepage.git ~/.claude/skills/samepage
 ```
 
 このパスにクローンしておけば Claude Code が自動的に認識する。リポジトリが
-`.claude-plugin/plugin.json` を持っているため、このフォルダは `samepage` プラグインとして
-読み込まれる。marketplace もインストール手順も不要で、**1回のクローンで2つのスキルが入る**。
+`.claude-plugin/plugin.json` を持っているため、このフォルダは `samepage@skills-dir` プラグイン
+として読み込まれる。marketplace もインストール手順も不要で、**1回のクローンで2つのスキルが入る**。
 
 | スキル | 用途 |
 |---|---|
@@ -136,10 +136,6 @@ git clone https://github.com/hasimonasu/samepage.git ~/.claude/skills/samepage
 | `grill-on-samepage` | コードを書く前に設計を詰める。samepage の上でラウンド形式の面接を行い、合意した文書がプロジェクトのSSOTになる。「設計を詰めたい」 |
 
 実際の挙動は `skills/samepage/SKILL.md` と `skills/grill-on-samepage/SKILL.md` に定義されている。
-
-> **プラグイン化より前にクローンしていた場合:** スラッシュコマンドが `/samepage` から
-> `/samepage:samepage` に変わる。それ以外は変わらない（クローン先のパスは同じで、説明文に
-> よる自動起動も従来どおり）。
 
 ## CLI リファレンス
 
@@ -157,7 +153,7 @@ python3 samepage/cli.py <input.html> [オプション]
 | `--out PATH` | 出力先パス。既定は入力を直接上書き |
 | `--responses PATH` | 埋め込む返信JSON（レビューコメントへの返信） |
 | `--questions PATH` | 埋め込む質問JSON（質問ピン） |
-| `--no-source-path` | `sourcePath` を絶対パスではなく `null` として埋め込む。配布物には必ず付ける |
+| `--no-source-path` | 注入したページの設定値 `sourcePath` を絶対パスではなく `null` として埋め込む。配布物には必ず付ける |
 | `--finalize` | レビュー層と議論ブロックを除いた公開用HTMLを別ファイルに書き出す。`--unit-selector`/`--responses`/`--questions` とは併用不可 |
 | `--comments PATH` | finalize前に未解決（`open`）コメントの有無を確認するためのコメントJSON |
 | `--force` | `--comments` が未解決を報告してもfinalizeを強行する |
@@ -213,11 +209,15 @@ SVG図を埋め込むHTMLを生成する側は、図中の各ノードの意味�
 
 ## プライバシーに関する注意
 
-既定では、注入されたページに `sourceHtml`（レビュー層を注入したファイルの絶対パス）が
-埋め込まれる。これは、書き出したコメントJSONだけを受け取ったセッションでも対象ファイルを
-特定できるようにするためのもの。HTML自体を配布する場合（READMEに添付する、自分のマシン外に
-共有するなど）は `--no-source-path` を付け、このフィールドをローカルのファイルシステムパス
-ではなく `null` として埋め込むこと。
+既定では、注入されたページにレビュー層を注入したファイルの絶対パスが埋め込まれる。これは、
+書き出したコメントJSONだけを受け取ったセッションでも対象ファイルを特定できるようにするための
+もの。このパスは2つの名前で登場するので混同しないよう注意してほしい。ページ内では埋め込み設定の
+`sourcePath` キー、書き出したJSONではそこから写された `sourceHtml` フィールドで、どちらも実在し、
+同じパスを保持している。
+
+HTML自体を配布する場合（READMEに添付する、自分のマシン外に共有するなど）は `--no-source-path`
+を付けること。`sourcePath` がローカルのファイルシステムパスではなく `null` として埋め込まれ、
+書き出される `sourceHtml` も `null` になる。
 
 ## FAQ
 
@@ -274,7 +274,11 @@ python3 samepage/cli.py README.html --unit-selector body \
     --label-format "Whole" --doc-id readme-en --no-source-path
 python3 samepage/cli.py README.ja.html --unit-selector body \
     --label-format "全体" --doc-id readme-ja --no-source-path
-python3 docs/build_alignment_html.py docs/alignment/0001-grill-on-samepage.md
+for md in docs/alignment/*.md; do
+    [ "$(basename "$md")" = "INDEX.md" ] && continue
+    python3 docs/build_alignment_html.py "$md"
+    python3 samepage/cli.py "${md%.md}.html" --finalize --out "${md%.md}.final.html"
+done
 python3 docs/build_alignment_html.py --index docs/alignment
 ```
 
@@ -297,20 +301,16 @@ PRを出す前に `python3 -m pytest` を実行してください（ブラウザ
 
 デモの再生成: `python3 docs/build_demo_gif.py`。
 
-`README.html` / `README.ja.html` はgit管理下にあるため、READMEを変更したら再生成してください:
+`README.html` / `README.ja.html` と `docs/alignment/` 配下のHTMLはgit管理下にあるため、生成元の
+`.md` を変更したら再生成してください。コマンドは上の「開発」節のものをそのまま使ってください
+（CI が突き合わせているのはこの手順です）。`--no-source-path` は必須で、付け忘れると自分の
+マシンの絶対パスがコミットされるHTMLに焼き込まれます。
 
-```bash
-pip install markdown
-python3 docs/build_readme_html.py README.md README.html
-python3 docs/build_readme_html.py README.ja.md README.ja.html
-python3 samepage/cli.py README.html --unit-selector body --label-format "Whole" \
-    --doc-id readme-en --no-source-path
-python3 samepage/cli.py README.ja.html --unit-selector body --label-format "Whole" \
-    --doc-id readme-ja --no-source-path
-```
+## クレジット
 
-`--no-source-path` は必須です。付け忘れると、自分のマシンの絶対パスがコミットされるHTMLに
-焼き込まれます。
+`grill-on-samepage` スキルの面接手法の語彙（design tree、frontier、ラウンド形式の質問、事実と
+決定の分離）は、[mattpocock/skills](https://github.com/mattpocock/skills)（MIT）の `grilling`
+スキルから借用しています。実装は独立に書いたもので、フォークではありません。
 
 ## ライセンス
 

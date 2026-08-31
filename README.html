@@ -109,7 +109,7 @@ td:first-child code, th:first-child code{
 <body data-sp-unit="u1" data-sp-label="Whole" data-sp-index="1">
 <div class="sp-banner">Generated from README.md — this file is derived; edit the .md and rebuild.</div>
 <div class="sp-shell">
-  <aside class="sp-toc-desktop"><p class="sp-toc-heading">Contents</p><ul class="sp-toc-list"><li><a href="#why">Why</a></li><li><a href="#what-it-is">What it is</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#how-it-compares">How it compares</a></li><li><a href="#try-it-on-this-readme">Try it on this README</a></li><li><a href="#quick-start">Quick start</a></li><li><a href="#requirements">Requirements</a></li><li><a href="#install-as-a-claude-code-skill">Install as a Claude Code skill</a></li><li><a href="#cli-reference">CLI reference</a></li><li><a href="#target-kinds">Target kinds</a></li><li><a href="#for-document-generators">For document generators</a></li><li><a href="#privacy-note">Privacy note</a></li><li><a href="#faq">FAQ</a></li><li><a href="#development">Development</a></li><li><a href="#contributing">Contributing</a></li><li><a href="#license">License</a></li></ul></aside>
+  <aside class="sp-toc-desktop"><p class="sp-toc-heading">Contents</p><ul class="sp-toc-list"><li><a href="#why">Why</a></li><li><a href="#what-it-is">What it is</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#how-it-compares">How it compares</a></li><li><a href="#try-it-on-this-readme">Try it on this README</a></li><li><a href="#quick-start">Quick start</a></li><li><a href="#requirements">Requirements</a></li><li><a href="#install-as-a-claude-code-skill">Install as a Claude Code skill</a></li><li><a href="#cli-reference">CLI reference</a></li><li><a href="#target-kinds">Target kinds</a></li><li><a href="#for-document-generators">For document generators</a></li><li><a href="#privacy-note">Privacy note</a></li><li><a href="#faq">FAQ</a></li><li><a href="#development">Development</a></li><li><a href="#contributing">Contributing</a></li><li><a href="#credits">Credits</a></li><li><a href="#license">License</a></li></ul></aside>
   <main class="sp-main">
     <header class="sp-hero"><h1 id="samepage">samepage</h1>
 <p><em>Get on the same page with your AI — literally.</em></p>
@@ -126,7 +126,7 @@ repository, as are the HTML files under <code>docs/demo/</code> and <code>tests/
 real product, project or organization.</p>
 </blockquote>
 </header>
-    <details class="sp-toc-mobile"><summary>Show contents</summary><p class="sp-toc-heading">Contents</p><ul class="sp-toc-list sp-toc-list-mobile"><li><a href="#why">Why</a></li><li><a href="#what-it-is">What it is</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#how-it-compares">How it compares</a></li><li><a href="#try-it-on-this-readme">Try it on this README</a></li><li><a href="#quick-start">Quick start</a></li><li><a href="#requirements">Requirements</a></li><li><a href="#install-as-a-claude-code-skill">Install as a Claude Code skill</a></li><li><a href="#cli-reference">CLI reference</a></li><li><a href="#target-kinds">Target kinds</a></li><li><a href="#for-document-generators">For document generators</a></li><li><a href="#privacy-note">Privacy note</a></li><li><a href="#faq">FAQ</a></li><li><a href="#development">Development</a></li><li><a href="#contributing">Contributing</a></li><li><a href="#license">License</a></li></ul></details>
+    <details class="sp-toc-mobile"><summary>Show contents</summary><p class="sp-toc-heading">Contents</p><ul class="sp-toc-list sp-toc-list-mobile"><li><a href="#why">Why</a></li><li><a href="#what-it-is">What it is</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#how-it-compares">How it compares</a></li><li><a href="#try-it-on-this-readme">Try it on this README</a></li><li><a href="#quick-start">Quick start</a></li><li><a href="#requirements">Requirements</a></li><li><a href="#install-as-a-claude-code-skill">Install as a Claude Code skill</a></li><li><a href="#cli-reference">CLI reference</a></li><li><a href="#target-kinds">Target kinds</a></li><li><a href="#for-document-generators">For document generators</a></li><li><a href="#privacy-note">Privacy note</a></li><li><a href="#faq">FAQ</a></li><li><a href="#development">Development</a></li><li><a href="#contributing">Contributing</a></li><li><a href="#credits">Credits</a></li><li><a href="#license">License</a></li></ul></details>
     <article class="sp-article"><h2 id="why">Why</h2>
 <p>Even when an AI produces the HTML deliverable, "review" usually still means describing the
 location in chat and asking for a fix. samepage lets the human comment directly on the rendered
@@ -207,9 +207,9 @@ rendered artifact and an AI agent needs to act on that review.</p>
 <tr>
 <td>Handing feedback to an AI</td>
 <td>one self-contained JSON, pasted into chat</td>
-<td>manual copy or bot integration</td>
-<td>manual copy or bot integration</td>
-<td>manual copy or bot integration</td>
+<td>manual copy, without a dedicated integration</td>
+<td>manual copy, without a dedicated integration</td>
+<td>manual copy, without a dedicated integration</td>
 </tr>
 <tr>
 <td>AI → human questions</td>
@@ -290,8 +290,8 @@ open your-doc.html            # or: start / xdg-open
 <pre><code class="language-bash">git clone https://github.com/hasimonasu/samepage.git ~/.claude/skills/samepage
 </code></pre>
 <p>Once cloned there, Claude Code picks it up automatically: the repository carries a
-<code>.claude-plugin/plugin.json</code>, so the folder loads as the <code>samepage</code> plugin with no marketplace and
-no install step. That single clone ships two skills.</p>
+<code>.claude-plugin/plugin.json</code>, so the folder loads as the <code>samepage@skills-dir</code> plugin with no
+marketplace and no install step. That single clone ships two skills.</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -312,11 +312,6 @@ no install step. That single clone ships two skills.</p>
 </table></div>
 <p><code>skills/samepage/SKILL.md</code> and <code>skills/grill-on-samepage/SKILL.md</code> define the full behavior each
 one follows.</p>
-<blockquote>
-<p><strong>If you cloned this before the plugin manifest landed:</strong> the slash command is now
-<code>/samepage:samepage</code> rather than <code>/samepage</code>. Nothing else changes — the clone path is the same,
-and Claude still reaches for the skill on its own from the description.</p>
-</blockquote>
 <h2 id="cli-reference">CLI reference</h2>
 <pre><code>python3 samepage/cli.py &lt;input.html&gt; [options]
 </code></pre>
@@ -362,7 +357,7 @@ and Claude still reaches for the skill on its own from the description.</p>
 </tr>
 <tr>
 <td><code>--no-source-path</code></td>
-<td>Embed <code>sourcePath</code> as <code>null</code> instead of an absolute path — use this for anything you distribute</td>
+<td>Embed the injected page's <code>sourcePath</code> config value as <code>null</code> instead of an absolute path — use this for anything you distribute</td>
 </tr>
 <tr>
 <td><code>--finalize</code></td>
@@ -444,11 +439,14 @@ the review is resolved, <code>--finalize</code> removes it along with the rest o
 </code></pre>
 <p>See <code>skills/samepage/SKILL.md</code> §7.5 and §8 for the complete conventions.</p>
 <h2 id="privacy-note">Privacy note</h2>
-<p>By default, the injected page embeds <code>sourceHtml</code> (the absolute path to the file the layer was
-injected into) so a session that only receives the exported comment JSON can still find the file.
-If you're distributing the HTML itself (attaching it to a README, sharing it outside your own
-machine, etc.), pass <code>--no-source-path</code> so that field is embedded as <code>null</code> instead of a local
-filesystem path.</p>
+<p>By default, the injected page embeds the absolute path to the file the layer was injected into, so
+a session that only receives the exported comment JSON can still find the file. The path travels
+under two different names, which are easy to mix up: in the page it is the <code>sourcePath</code> key of the
+embedded config; in the exported JSON it is copied out as the <code>sourceHtml</code> field. Both exist, and
+they hold the same path.</p>
+<p>If you're distributing the HTML itself (attaching it to a README, sharing it outside your own
+machine, etc.), pass <code>--no-source-path</code>: <code>sourcePath</code> is then embedded as <code>null</code> instead of a local
+filesystem path, and the exported <code>sourceHtml</code> comes out <code>null</code> too.</p>
 <h2 id="faq">FAQ</h2>
 <p><strong>Q. How do I tell whether an HTML file is the original or a generated artifact?</strong>
 Look for a same-named source file next to it (e.g. a <code>.md</code> beside the path in <code>sourceHtml</code>), or
@@ -491,7 +489,11 @@ python3 samepage/cli.py README.html --unit-selector body \
     --label-format &quot;Whole&quot; --doc-id readme-en --no-source-path
 python3 samepage/cli.py README.ja.html --unit-selector body \
     --label-format &quot;全体&quot; --doc-id readme-ja --no-source-path
-python3 docs/build_alignment_html.py docs/alignment/0001-grill-on-samepage.md
+for md in docs/alignment/*.md; do
+    [ &quot;$(basename &quot;$md&quot;)&quot; = &quot;INDEX.md&quot; ] &amp;&amp; continue
+    python3 docs/build_alignment_html.py &quot;$md&quot;
+    python3 samepage/cli.py &quot;${md%.md}.html&quot; --finalize --out &quot;${md%.md}.final.html&quot;
+done
 python3 docs/build_alignment_html.py --index docs/alignment
 </code></pre>
 <p>CI runs exactly this and fails if any generated file is out of date, so <code>--no-source-path</code> is not
@@ -506,17 +508,15 @@ otherwise they're skipped).</p>
 <p>Naming (the <code>sp-</code> CSS prefix, <code>data-sp-*</code> attributes, marker comments) is fixed — see
 <code>docs/design.md</code>.</p>
 <p>To rebuild the demo: <code>python3 docs/build_demo_gif.py</code>.</p>
-<p><code>README.html</code> / <code>README.ja.html</code> are tracked, so rebuild them after any README change:</p>
-<pre><code class="language-bash">pip install markdown
-python3 docs/build_readme_html.py README.md README.html
-python3 docs/build_readme_html.py README.ja.md README.ja.html
-python3 samepage/cli.py README.html --unit-selector body --label-format &quot;Whole&quot; \
-    --doc-id readme-en --no-source-path
-python3 samepage/cli.py README.ja.html --unit-selector body --label-format &quot;Whole&quot; \
-    --doc-id readme-ja --no-source-path
-</code></pre>
-<p><code>--no-source-path</code> is required here — without it the absolute path of your own machine is baked
-into the committed HTML.</p>
+<p><code>README.html</code> / <code>README.ja.html</code> and the HTML under <code>docs/alignment/</code> are tracked, so rebuild them
+after any change to the <code>.md</code> they come from. Use the command sequence in "Development" above
+verbatim — it is what CI checks against, and <code>--no-source-path</code> is not optional there: without it
+the absolute path of your own machine is baked into the committed HTML.</p>
+<h2 id="credits">Credits</h2>
+<p>The <code>grill-on-samepage</code> skill borrows its interview vocabulary — the design tree, the frontier,
+asking in rounds, the split between facts and decisions — from the <code>grilling</code> skill in
+<a href="https://github.com/mattpocock/skills">mattpocock/skills</a> (MIT); the implementation here is
+independent, not a fork.</p>
 <h2 id="license">License</h2>
 <p>MIT — see <code>LICENSE</code>.</p></article>
   </main>

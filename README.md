@@ -75,7 +75,7 @@ rendered artifact and an AI agent needs to act on that review.
 |---|---|---|---|---|
 | What you comment on | any static HTML, as rendered | the service's own documents | a text diff | any web page |
 | Server / account | none | required | required | required |
-| Handing feedback to an AI | one self-contained JSON, pasted into chat | manual copy or bot integration | manual copy or bot integration | manual copy or bot integration |
+| Handing feedback to an AI | one self-contained JSON, pasted into chat | manual copy, without a dedicated integration | manual copy, without a dedicated integration | manual copy, without a dedicated integration |
 | AI → human questions | question pins on the same page | comment replies | comment replies | comment replies |
 | Where fixes land | the original — the source, if generated | the document itself | the document itself | — |
 | Publishable output | `--finalize` strips the layer | — | — | — |
@@ -133,8 +133,8 @@ git clone https://github.com/hasimonasu/samepage.git ~/.claude/skills/samepage
 ```
 
 Once cloned there, Claude Code picks it up automatically: the repository carries a
-`.claude-plugin/plugin.json`, so the folder loads as the `samepage` plugin with no marketplace and
-no install step. That single clone ships two skills.
+`.claude-plugin/plugin.json`, so the folder loads as the `samepage@skills-dir` plugin with no
+marketplace and no install step. That single clone ships two skills.
 
 | Skill | Use it for |
 |---|---|
@@ -143,10 +143,6 @@ no install step. That single clone ships two skills.
 
 `skills/samepage/SKILL.md` and `skills/grill-on-samepage/SKILL.md` define the full behavior each
 one follows.
-
-> **If you cloned this before the plugin manifest landed:** the slash command is now
-> `/samepage:samepage` rather than `/samepage`. Nothing else changes — the clone path is the same,
-> and Claude still reaches for the skill on its own from the description.
 
 ## CLI reference
 
@@ -164,7 +160,7 @@ python3 samepage/cli.py <input.html> [options]
 | `--out PATH` | Output path. Default: overwrite the input in place |
 | `--responses PATH` | Responses JSON to embed (replies to review comments) |
 | `--questions PATH` | Questions JSON to embed (question pins) |
-| `--no-source-path` | Embed `sourcePath` as `null` instead of an absolute path — use this for anything you distribute |
+| `--no-source-path` | Embed the injected page's `sourcePath` config value as `null` instead of an absolute path — use this for anything you distribute |
 | `--finalize` | Write a publishable HTML with the review layer and discussion blocks removed, to a separate file. Cannot combine with `--unit-selector`/`--responses`/`--questions` |
 | `--comments PATH` | Comments JSON checked for unresolved (`open`) items before finalizing |
 | `--force` | Finalize even if `--comments` reports unresolved items |
@@ -219,11 +215,15 @@ See `skills/samepage/SKILL.md` §7.5 and §8 for the complete conventions.
 
 ## Privacy note
 
-By default, the injected page embeds `sourceHtml` (the absolute path to the file the layer was
-injected into) so a session that only receives the exported comment JSON can still find the file.
+By default, the injected page embeds the absolute path to the file the layer was injected into, so
+a session that only receives the exported comment JSON can still find the file. The path travels
+under two different names, which are easy to mix up: in the page it is the `sourcePath` key of the
+embedded config; in the exported JSON it is copied out as the `sourceHtml` field. Both exist, and
+they hold the same path.
+
 If you're distributing the HTML itself (attaching it to a README, sharing it outside your own
-machine, etc.), pass `--no-source-path` so that field is embedded as `null` instead of a local
-filesystem path.
+machine, etc.), pass `--no-source-path`: `sourcePath` is then embedded as `null` instead of a local
+filesystem path, and the exported `sourceHtml` comes out `null` too.
 
 ## FAQ
 
@@ -280,7 +280,11 @@ python3 samepage/cli.py README.html --unit-selector body \
     --label-format "Whole" --doc-id readme-en --no-source-path
 python3 samepage/cli.py README.ja.html --unit-selector body \
     --label-format "全体" --doc-id readme-ja --no-source-path
-python3 docs/build_alignment_html.py docs/alignment/0001-grill-on-samepage.md
+for md in docs/alignment/*.md; do
+    [ "$(basename "$md")" = "INDEX.md" ] && continue
+    python3 docs/build_alignment_html.py "$md"
+    python3 samepage/cli.py "${md%.md}.html" --finalize --out "${md%.md}.final.html"
+done
 python3 docs/build_alignment_html.py --index docs/alignment
 ```
 
@@ -303,20 +307,17 @@ Naming (the `sp-` CSS prefix, `data-sp-*` attributes, marker comments) is fixed 
 
 To rebuild the demo: `python3 docs/build_demo_gif.py`.
 
-`README.html` / `README.ja.html` are tracked, so rebuild them after any README change:
+`README.html` / `README.ja.html` and the HTML under `docs/alignment/` are tracked, so rebuild them
+after any change to the `.md` they come from. Use the command sequence in "Development" above
+verbatim — it is what CI checks against, and `--no-source-path` is not optional there: without it
+the absolute path of your own machine is baked into the committed HTML.
 
-```bash
-pip install markdown
-python3 docs/build_readme_html.py README.md README.html
-python3 docs/build_readme_html.py README.ja.md README.ja.html
-python3 samepage/cli.py README.html --unit-selector body --label-format "Whole" \
-    --doc-id readme-en --no-source-path
-python3 samepage/cli.py README.ja.html --unit-selector body --label-format "Whole" \
-    --doc-id readme-ja --no-source-path
-```
+## Credits
 
-`--no-source-path` is required here — without it the absolute path of your own machine is baked
-into the committed HTML.
+The `grill-on-samepage` skill borrows its interview vocabulary — the design tree, the frontier,
+asking in rounds, the split between facts and decisions — from the `grilling` skill in
+[mattpocock/skills](https://github.com/mattpocock/skills) (MIT); the implementation here is
+independent, not a fork.
 
 ## License
 
