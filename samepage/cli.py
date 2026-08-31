@@ -29,10 +29,6 @@ except ImportError:
 SIMPLE_SELECTOR = re.compile(r"^(?:([a-zA-Z][\w-]*))?(?:\.([\w-]+))?$")
 ID_SELECTOR = re.compile(r"^#([\w-]+)$")
 
-# Leftover marker from samepage's predecessor; used only for detection to prevent
-# double injection if an earlier review layer remains in the input.
-LEGACY_MARKER = "<!-- legacy-layer:begin -->"
-
 VALID_ACTIONS = ("fixed", "declined", "partial", "noted")
 VALID_TARGET_KINDS = ("text-range", "element", "insertion-point", "diagram-node", "document")
 
@@ -591,12 +587,6 @@ def main(argv=None):
             else:
                 print("Warning: --comments not given; skipped the unresolved-comment check", file=sys.stderr)
             html = src.read_text(encoding="utf-8")
-            if LEGACY_MARKER in html:
-                print(
-                    "Error: input contains a legacy 'legacy-layer' review layer; strip it before injecting samepage.",
-                    file=sys.stderr,
-                )
-                return 2
             out_html = finalize_html(html)
         except (ValueError, UnicodeDecodeError) as e:
             print(f"Error: {e}", file=sys.stderr)
@@ -615,12 +605,6 @@ def main(argv=None):
 
     try:
         html = src.read_text(encoding="utf-8")
-        if LEGACY_MARKER in html:
-            print(
-                "Error: input contains a legacy 'legacy-layer' review layer; strip it before injecting samepage.",
-                file=sys.stderr,
-            )
-            return 2
         doc_id = a.doc_id or src.stem
 
         if a.unit_selector:

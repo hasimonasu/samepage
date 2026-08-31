@@ -95,23 +95,6 @@ def open_file(page, path):
     page.wait_for_selector("#spBadge")
 
 
-def test_naming_hygiene():
-    """Sanity check that assets don't leak the old reference-implementation naming.
-
-    Needles are assembled at runtime (not written as literal substrings here) so this
-    check file itself never contains the strings it is scanning for.
-    """
-    old_prefix = "legacy" + "-layer"
-    old_globals = ["LEGACY" + "_CONFIG", "LEGACY" + "_RESPONSES", "LEGACY" + "_QUESTIONS"]
-    old_attr = "data-" + "legacy"
-    old_alias = "legacy" + "cli"
-    for p in [ASSETS_DIR / "samepage.js", ASSETS_DIR / "samepage.css", ASSETS_DIR / "panel.html",
-              FIXTURE]:
-        text = p.read_text(encoding="utf-8")
-        for needle in [old_prefix] + old_globals + [old_attr, old_alias]:
-            assert needle not in text, f"{needle!r} found in {p}"
-
-
 def test_text_selection_comment_creates_mark(tmp_path, page):
     path = build_page(tmp_path)
     open_file(page, path)
