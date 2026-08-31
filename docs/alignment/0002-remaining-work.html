@@ -58,7 +58,7 @@ td.sp-v{font-weight:700; color:#0b5750; white-space:nowrap;}
 <header class="sp-hero">
   <p class="sp-eyebrow">Alignment 0002</p>
   <h1>残作業の進め方</h1>
-  <p>ALIGNMENT 0001 で合意した実装計画のうち、step 1 と step 6 が未着手のまま残っている。その解除方法と、成果物の扱いを決める。</p>
+  <p>この文書を書き始めた時点では、ALIGNMENT 0001 で合意した実装計画のうち step 1 と step 6 が未着手のまま残っていた。その解除方法と、成果物の扱いを決める（実施結果は §2 のとおり、6 段階すべて完了している）。</p>
   <p class="sp-meta"><span>状態 合意済み</span><span>合意日 2026-08-31</span><span>ブランチ feature/grill-on-samepage</span><span>決定 6 件</span></p>
 </header>
 <article class="sp-article"><h2 id="0">0. この文書について</h2>
@@ -105,7 +105,7 @@ td.sp-v{font-weight:700; color:#0b5750; white-space:nowrap;}
 <tr id="w3">
 <td>W-3<br>docs ジョブの<br>README 検査</td>
 <td>W-1 の後に<br>AI が再生成</td>
-<td>順序を守れば「あなたの作業の一部を AI が作る」問題が起きない。D-12 で得た「README.html の鮮度も検査できる」利点を捨てずに済む<br><strong>却下:</strong> 検査を外す / <code>continue-on-error</code> は、どちらも赤いまま放置される状態を作る</td>
+<td>順序を守れば「メンテナの作業の一部を AI が作る」問題が起きない。D-12 で得た「README.html の鮮度も検査できる」利点を捨てずに済む<br><strong>却下:</strong> 検査を外す / <code>continue-on-error</code> は、どちらも赤いまま放置される状態を作る</td>
 <td>W-1 のコミット後に再生成し、ドキュメント同期のコミットに同梱</td>
 </tr>
 <tr id="w4">
@@ -159,7 +159,7 @@ td.sp-v{font-weight:700; color:#0b5750; white-space:nowrap;}
 </tr>
 </tbody>
 </table></div>
-<p>step 1 と 6 が着手できずにいたのは、どちらもあなたの未コミット作業と同じファイルに触るためだった。W-1 でその解除方法が決まり、着手できるようになった。当時の状態:</p>
+<p>step 1 と 6 が着手できずにいたのは、どちらもメンテナの未コミット作業と同じファイルに触るためだった。W-1 でその解除方法が決まり、着手できるようになった。当時の状態:</p>
 <pre><code> M README.html          ← step 6 の対象
  M README.ja.html       ← step 6 の対象
  M README.ja.md         ← step 6 の対象
@@ -181,6 +181,7 @@ Component inventory
 <p><strong>2 つのスキルが 1 クローンで読み込まれる</strong>ことを確認済み（D-3 のとおり）。検証用のシンボリックリンクは削除済み。</p>
 <h2 id="3">3. 統合フェーズの決定</h2>
 <p>実装が終わったことで問える状態になった 2 件。どちらも上流が片付くまで問えなかった。</p>
+<p>後半の W-5 / W-6 の小節は、grilling セッションで実際にやり取りした記録である。エージェント（作業した AI）が選択肢と推奨を書き、メンテナ（このリポジトリの作者）が回答する、という順で並ぶ。原文の一人称（あなた＝メンテナ / 私＝エージェント）は役割名に直してある。</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -205,7 +206,6 @@ Component inventory
 </tr>
 </tbody>
 </table></div>
-<h3 id="w5">W-5. CLAUDE.md の更新</h3>
 <h3 id="w5">W-5. CLAUDE.md の更新</h3>
 <p><code>CLAUDE.md</code> は AI 向けのリポジトリ運用ルールで、今回の変更で 2 箇所が実態と合わなくなった。</p>
 <ul>
@@ -238,11 +238,11 @@ Component inventory
 </tr>
 </tbody>
 </table></div>
-<p><strong>推奨: パス修正 + SSOT の条項を追加。</strong> 「設計上の判断に迷ったら <code>docs/alignment/INDEX.md</code> を見る。そこで確定している決定を勝手に覆さない」の 2 行で足ります。索引を作ったのに誰も参照しないのが一番もったいない。</p>
-<p><strong>採用。</strong> 実際には取り消し手順への導線も足しました（覆すなという規則だけだと、覆すべき場面での行き先が無いため）。</p>
+<p><strong>エージェントの推奨: パス修正 + SSOT の条項を追加。</strong> 「設計上の判断に迷ったら <code>docs/alignment/INDEX.md</code> を見る。そこで確定している決定を勝手に覆さない」の 2 行で足りる。索引を作ったのに誰も参照しないのが一番もったいない。</p>
+<p><strong>メンテナの回答: 採用。</strong> 実際には取り消し手順への導線も足した（覆すなという規則だけだと、覆すべき場面での行き先が無いため）。</p>
 <h3 id="w6">W-6. develop への統合</h3>
 <p><code>feature/grill-on-samepage</code> に 8 コミットある。<code>develop</code> には Copy JSON の 1 コミットだけ。</p>
-<p><code>CLAUDE.md</code> は「<code>main</code> へのマージ・直接コミット・push は AI は行わない」と定めていますが、<code>develop</code> への統合については明示がありません。最後の一文「PR 作成やマージは提案までに留める」を広く読むなら、<code>develop</code> へのマージも私はやらないほうがよい、と読めます。<strong>この解釈はあなたが決めることなので、聞きます。</strong></p>
+<p><code>CLAUDE.md</code> は「<code>main</code> へのマージ・直接コミット・push は AI は行わない」と定めているが、<code>develop</code> への統合については明示がない。最後の一文「PR 作成やマージは提案までに留める」を広く読むなら、<code>develop</code> へのマージもエージェントはやらないほうがよい、と読める。<strong>この解釈はメンテナが決めることなので、エージェントは推測せずに問うた。</strong></p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -264,14 +264,15 @@ Component inventory
 </tr>
 <tr>
 <td><strong>feature のまま置く</strong></td>
-<td>何も起きない。あなたが好きなときに統合できる</td>
+<td>何も起きない。メンテナが好きなときに統合できる</td>
 <td>8 コミットが手つかずで残る</td>
 </tr>
 </tbody>
 </table></div>
-<p><strong>推奨: feature のまま置く。</strong> <code>CLAUDE.md</code> の趣旨は「統合の判断はメンテナが持つ」だと読めるので、私からは動かさないのが安全です。マージしてよいなら明示してください。</p>
-<p><strong>推奨は採られなかった。</strong>「AI が develop にマージしてよい。push はしないで」との回答。私の読みは慎重すぎたことになります。曖昧な規則を毎回解釈し直さずに済むよう、<code>CLAUDE.md</code> のブランチ運用を明示に書き換えました。</p>
+<p><strong>エージェントの推奨: feature のまま置く。</strong> <code>CLAUDE.md</code> の趣旨は「統合の判断はメンテナが持つ」だと読めるので、エージェントからは動かさないのが安全。マージしてよいなら明示してほしい、と添えた。</p>
+<p><strong>メンテナの回答: 推奨は採られなかった。</strong>「AI が develop にマージしてよい。push はしないで」。エージェントの読みは慎重すぎたことになる。曖昧な規則を毎回解釈し直さずに済むよう、<code>CLAUDE.md</code> のブランチ運用を明示に書き換えた。</p>
 <h2 id="4">4. 判断の記録（合意時点の材料）</h2>
+<p>この節は grilling セッションで実際にやり取りした記録である。合意の過程を文書に残すこと自体が D-7 の設計意図なので、要約せずそのまま残してある。各項目は<strong>エージェント（作業した AI）が選択肢と推奨を提示し、メンテナ（このリポジトリの作者）が回答する</strong>という順で読める。原文の一人称（あなた＝メンテナ / 私＝エージェント）は役割名に置き換え、状況の記述は合意時点のものとして過去形にしてある。</p>
 <h3 id="w1">W-1. 未コミット作業の扱い</h3>
 <p>step 1 と 6 のブロックを解除する方法。</p>
 <div class="table-wrap"><table>
@@ -284,19 +285,19 @@ Component inventory
 </thead>
 <tbody>
 <tr>
-<td><strong>あなたがコミットする</strong></td>
-<td>最も安全。作業の帰属が正しく、あなたのコミットメッセージで履歴に残る。私は差分の意図を推測しなくてよい</td>
-<td>私が待つことになる</td>
+<td><strong>メンテナがコミットする</strong></td>
+<td>最も安全。作業の帰属が正しく、メンテナのコミットメッセージで履歴に残る。エージェントは差分の意図を推測しなくてよい</td>
+<td>エージェントが待つことになる</td>
 </tr>
 <tr>
-<td><strong>私がコミットする</strong></td>
+<td><strong>エージェントがコミットする</strong></td>
 <td>一手で先に進む</td>
-<td><strong>他人の作業を AI がコミットすることになる。</strong> <code>samepage.js</code> の 47 行の変更、<code>test_browser.py</code> の変更、デモ画像の再生成の意図を私は把握していない。要約を書けない</td>
+<td><strong>他人の作業を AI がコミットすることになる。</strong> <code>samepage.js</code> の 47 行の変更、<code>test_browser.py</code> の変更、デモ画像の再生成の意図をエージェントは把握していない。要約を書けない</td>
 </tr>
 <tr>
 <td><strong>stash して進める</strong></td>
 <td>ファイルを触らずに step 1/6 を進められる</td>
-<td>stash は事故のもと。<code>SKILL.md</code> の移動と README の書き換えが絡むので、復元時に衝突しうる。あなたの作業が一時的に消える</td>
+<td>stash は事故のもと。<code>SKILL.md</code> の移動と README の書き換えが絡むので、復元時に衝突しうる。メンテナの作業が一時的に消える</td>
 </tr>
 <tr>
 <td><strong>step 1/6 を当面やらない</strong></td>
@@ -305,9 +306,9 @@ Component inventory
 </tr>
 </tbody>
 </table></div>
-<p><strong>推奨: あなたがコミットする。</strong> 他人の変更を要約なしにコミットするのは避けたい、というのが理由です。<code>samepage.js</code> の 47 行が何を意図した変更なのかは、あなたにしか書けません。</p>
+<p><strong>エージェントの推奨: メンテナがコミットする。</strong> 他人の変更を要約なしにコミットするのは避けたい、というのが理由。<code>samepage.js</code> の 47 行が何を意図した変更なのかは、メンテナにしか書けない。</p>
 <h3 id="w2">W-2. 新規成果物のコミット</h3>
-<p>私が作ったファイルは全て新規で、あなたの作業と重なりません（<code>.github/workflows/test.yml</code> のみ既存ファイルへの追記）。</p>
+<p>エージェントが作ったファイルは全て新規で、メンテナの作業と重ならない（<code>.github/workflows/test.yml</code> のみ既存ファイルへの追記）。</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -329,14 +330,14 @@ Component inventory
 </tr>
 <tr>
 <td><strong>コミットしない</strong></td>
-<td>あなたが内容を見てから判断できる</td>
+<td>メンテナが内容を見てから判断できる</td>
 <td>作業ツリーが膨らみ続ける</td>
 </tr>
 </tbody>
 </table></div>
-<p><strong>推奨: 段階ごとに分ける。</strong> ビルダー / スキル定義 / テスト / CI / 合意文書、の 5 つ。各コミットメッセージに根拠となる決定 ID（D-5、D-13 など）を書けば、SSOT とコードが相互参照できます。</p>
+<p><strong>エージェントの推奨: 段階ごとに分ける。</strong> ビルダー / スキル定義 / テスト / CI / 合意文書、の 5 つ。各コミットメッセージに根拠となる決定 ID（D-5、D-13 など）を書けば、SSOT とコードが相互参照できる。</p>
 <h3 id="w3">W-3. docs ジョブの README 検査</h3>
-<p>追加した <code>docs</code> ジョブは<strong>現状 fail します</strong>。<code>README.html</code> があなたの <code>.md</code> 変更に対して古いためです（生成し直すと差分が出ることを確認済み。ファイルは触っていません）。これは D-12 で「README.html の鮮度検査も同じジョブに乗せる」に合意した結果、意図どおり検出されているものです。</p>
+<p><strong>合意時点の状況:</strong> 追加した <code>docs</code> ジョブは fail していた。<code>README.html</code> がメンテナの <code>.md</code> 変更に対して古かったためである（生成し直すと差分が出ることを確認済み。この時点ではファイルを触っていない）。これは D-12 で「README.html の鮮度検査も同じジョブに乗せる」に合意した結果、意図どおり検出されたものだった。<strong>その後この節の推奨どおり W-1 の後に再生成を同梱したので、この fail は解消している</strong>（§1 の W-3 を参照）。</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -349,7 +350,7 @@ Component inventory
 <tr>
 <td><strong>README を再生成して同梱</strong></td>
 <td>ジョブが通る。生成物が最新になる</td>
-<td>生成物はあなたの <code>.md</code> 変更に依存するので、<strong>私が再生成するとあなたの作業の一部を私が作ったことになる</strong>。W-1 と同じ問題</td>
+<td>生成物はメンテナの <code>.md</code> 変更に依存するので、<strong>エージェントが再生成するとメンテナの作業の一部をエージェントが作ったことになる</strong>。W-1 と同じ問題</td>
 </tr>
 <tr>
 <td><strong>README 検査を外す</strong></td>
@@ -368,9 +369,9 @@ Component inventory
 </tr>
 </tbody>
 </table></div>
-<p><strong>推奨: README を再生成して同梱、ただし W-1 であなたがコミットした後に私がやる。</strong> 順序を守れば W-1 の問題は起きません。W-1 が「あなたがコミットする」なら、その直後に私が再生成して W-2 の CI コミットに含めます。</p>
+<p><strong>エージェントの推奨: README を再生成して同梱、ただし W-1 でメンテナがコミットした後にエージェントがやる。</strong> 順序を守れば W-1 の問題は起きない。W-1 が「メンテナがコミットする」なら、その直後にエージェントが再生成して W-2 の CI コミットに含める。</p>
 <h3 id="w4">W-4. samepage のファイル権限</h3>
-<p><code>--finalize</code> で新規パスに出力すると、ファイルが <code>0600</code> で作られます。<code>_write_atomic</code> が <code>mkstemp</code>（常に 0600）で作ったあと、<code>copymode</code> を<strong>既存ファイルにしか適用しない</strong>ためです。今回の <code>0001-grill-on-samepage.final.html</code> も 0600 で生成され、手で <code>chmod 644</code> しました。</p>
+<p><strong>合意時点の状況:</strong> <code>--finalize</code> で新規パスに出力すると、ファイルが <code>0600</code> で作られていた。<code>_write_atomic</code> が <code>mkstemp</code>（常に 0600）で作ったあと、<code>copymode</code> を<strong>既存ファイルにしか適用しない</strong>ためである。<code>0001-grill-on-samepage.final.html</code> もこのとき 0600 で生成され、手で <code>chmod 644</code> した。<strong>その後 W-4 の決定で <code>cli.py</code> を修正したので、現在の出力は umask に従う</strong>（§1 の W-4 を参照）。</p>
 <div class="table-wrap"><table>
 <thead>
 <tr>
@@ -382,7 +383,7 @@ Component inventory
 <tbody>
 <tr>
 <td><strong><code>cli.py</code> を直す</strong></td>
-<td><code>.final.html</code> は SKILL.md §8 で「配布・公開する側」と定義されている成果物なので、<strong>0600 はその用途を壊している</strong>。修正は数行。<code>cli.py</code> はあなたが変更中のファイルに含まれないので衝突しない</td>
+<td><code>.final.html</code> は SKILL.md §8 で「配布・公開する側」と定義されている成果物なので、<strong>0600 はその用途を壊している</strong>。修正は数行。<code>cli.py</code> はメンテナが変更中のファイルに含まれないので衝突しない</td>
 <td>0001 の合意範囲外の変更。samepage 本体に触ることになる</td>
 </tr>
 <tr>
@@ -397,8 +398,8 @@ Component inventory
 </tr>
 </tbody>
 </table></div>
-<p><strong>推奨: <code>cli.py</code> を直す。</strong> 範囲外ではありますが、finalize の出力は「配布するもの」と明記されている以上、既定で他者が読めないのは仕様と実装の食い違いです。ただしこれは私の判断ではなくあなたの判断なので、範囲を守るほうを選ぶなら issue に落とします。</p>
-<h2 id="3_1">3. 参考: 完了分の検証結果</h2>
+<p><strong>エージェントの推奨: <code>cli.py</code> を直す。</strong> 範囲外ではあるが、finalize の出力は「配布するもの」と明記されている以上、既定で他者が読めないのは仕様と実装の食い違いである。ただしこれはエージェントの判断ではなくメンテナの判断なので、範囲を守るほうを選ぶなら issue に落とす、と添えた。</p>
+<h2 id="5">5. 参考: 完了分の検証結果</h2>
 <div class="table-wrap"><table>
 <thead>
 <tr>

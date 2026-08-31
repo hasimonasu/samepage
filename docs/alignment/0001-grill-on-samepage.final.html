@@ -65,7 +65,7 @@ td.sp-v{font-weight:700; color:#0b5750; white-space:nowrap;}
 <p>これは <strong>合意ドキュメント</strong> です。この文書の上で質問に答え、コメントを付け、合意に達したら <code>--finalize</code> で公開用 HTML を切り出します。2026-08-30 に合意が成立し、以降この文書が本機能の SSOT です。</p>
 <p>この文書自体が本機能の最初のドッグフーディングでした。5 ラウンド・16 問・コメント 3 件で合意に至り、その過程で拾った不便がそのまま決定 D-5・D-7・D-14 と、SKILL.md への要求（確定した決定を取り消す導線）になっています。</p>
 <h2 id="1">1. 目的</h2>
-<p>mattpocock/skills の <code>grilling</code>（設計を詰める面接ループ）は、ターミナル上の会話で回ります。そのため <strong>合意の実体が会話の中にしか残りません</strong>。<code>grill-with-docs</code> は用語集と ADR をファイルに落としますが、公式ドキュメント自身が最大の未解決課題として「それ以外の決定はどこへ行った？ → 会話の中だけ」を挙げています。</p>
+<p><a href="https://github.com/mattpocock/skills">mattpocock/skills</a> の <code>grilling</code>（設計を詰める面接ループ）は、ターミナル上の会話で回ります。そのため <strong>合意の実体が会話の中にしか残りません</strong>。<code>grill-with-docs</code> は用語集と ADR をファイルに落としますが、2026-08-30 に確認した時点では、そのドキュメント自身が最大の未解決課題として「それ以外の決定はどこへ行った？ → 会話の中だけ」を挙げていました。</p>
 <p>本機能は、この面接ループのインターフェースを samepage の HTML に移します。狙いは 3 つです。</p>
 <ol>
 <li><strong>合意が文書として残る。</strong> 質問も回答も、決定も未決も、1 つの HTML の上にある。</li>
@@ -134,7 +134,7 @@ td.sp-v{font-weight:700; color:#0b5750; white-space:nowrap;}
 <tr id="d2">
 <td>D-2<br>grilling との関係</td>
 <td>独立して完結<br>（出典は明記）</td>
-<td>質問の提示形式が本家と根本的に違う（番号付きリスト → 質問ピン + <code>choices</code>）ため、どのみち手順を書き直す。加えて本家が「スキルが別スキルを呼んでも確実にロードされない」を未修正の既知バグとして認めており、samepage 側から制御できない。<br><strong>却下:</strong> 依存はロード失敗の穴を塞げず「クローンすれば動く」が崩れる。ハイブリッドは存在検知ができず不具合の切り分けが難しい。<br><strong>条件:</strong> design tree / frontier / ラウンド / 事実と決定の分離は grilling 由来と明記する。権利面は §5 で確認済み。</td>
+<td>質問の提示形式が本家と根本的に違う（番号付きリスト → 質問ピン + <code>choices</code>）ため、どのみち手順を書き直す。加えて、他スキルへの依存は samepage 側から制御できないロード経路を持ち込むので、「クローンすれば動く」という保証を優先した（2026-08-30 に確認した時点の本家ドキュメントにも、スキルから別スキルを呼んでも確実にロードされない旨の記載があった。その後の状況は未確認）。<br><strong>却下:</strong> 依存はロード失敗の穴を塞げず「クローンすれば動く」が崩れる。ハイブリッドは存在検知ができず不具合の切り分けが難しい。<br><strong>条件:</strong> design tree / frontier / ラウンド / 事実と決定の分離は grilling 由来と明記する。権利面は §5 で確認済み。</td>
 </tr>
 <tr id="d3">
 <td>D-3<br>スキルの配布形態</td>
@@ -216,7 +216,7 @@ td.sp-v{font-weight:700; color:#0b5750; white-space:nowrap;}
 <tbody>
 <tr>
 <td>mattpocock/skills</td>
-<td>MIT（Copyright (c) 2026 Matt Pocock）。<code>package.json</code> の <code>"license": "MIT"</code> とも一致</td>
+<td><strong>2026-08-30 に確認した時点の表記:</strong> MIT（Copyright (c) 2026 Matt Pocock）。<code>package.json</code> の <code>"license": "MIT"</code> とも一致していた。ここに写した年・表記が原文と一致するかは、転載や取り込みを行う前に原文で再確認する</td>
 </tr>
 <tr>
 <td>samepage</td>
@@ -224,7 +224,7 @@ td.sp-v{font-weight:700; color:#0b5750; white-space:nowrap;}
 </tr>
 <tr>
 <td>アイデアの借用</td>
-<td>著作権はアイデア・手法そのものを保護しない。design tree / frontier / ラウンド / 事実と決定の分離を<strong>自分の言葉で書き直して使うことに法的制約はない</strong>。出典明記は義務ではなく礼儀として行う</td>
+<td>著作権法の一般的な理解では、アイデアや手法そのものは著作権の保護対象ではないと考えている（法的助言ではない）。この理解のもとで、design tree / frontier / ラウンド / 事実と決定の分離は自分の言葉で書き直して使う。出典明記は義務ではなく礼儀として行う</td>
 </tr>
 <tr>
 <td>文章の転載</td>
@@ -263,7 +263,7 @@ Component inventory
 </tr>
 <tr>
 <td>共有スクリプト</td>
-<td><code>${CLAUDE_PLUGIN_ROOT}</code> がプラグイン専用に存在し、公式ドキュメントに「プラグインのスキル間で共有するリソースを参照するのに使う」と明記。<code>allowed-tools</code> の中でも展開される</td>
+<td><code>${CLAUDE_PLUGIN_ROOT}</code> がプラグイン専用に存在し、2026-08-30 に参照した公式ドキュメントには「プラグインのスキル間で共有するリソースを参照するのに使う」旨の記載があった。<code>allowed-tools</code> の中でも展開される</td>
 </tr>
 <tr>
 <td>ルート SKILL.md</td>
