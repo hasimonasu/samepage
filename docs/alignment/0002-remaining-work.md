@@ -29,7 +29,7 @@ branch: feature/grill-on-samepage
 
 | 決定 | 結論 | 根拠 | 実施 |
 |---|---|---|---|
-| W-1<br>未コミット作業の扱い | AI が develop で<br>コミットする | 4 択のうち「AI がコミットしてよい」を選択。付帯質問「Copy JSON は develop でコミットしたい。可能？」への答えは**可能**。作業ツリーの変更はブランチに属さないので、develop でコミットしてから feature を早送りすれば両方に入る。<br>**却下:** stash は `SKILL.md` の移動と README の書き換えが絡むため復元時に衝突しうる。step 1/6 の先送りは `${CLAUDE_PLUGIN_ROOT}` 前提で書いた grill スキルを試せないままにする | `8d1bad8` を develop に作成し、feature を早送り |
+| W-1<br>未コミット作業の扱い | AI が develop で<br>コミットする | 4 択のうち「AI がコミットしてよい」を選択。付帯質問「Copy JSON は develop でコミットしたい。可能？」への答えは**可能**。作業ツリーの変更はブランチに属さないので、develop でコミットしてから feature を早送りすれば両方に入る。<br>**却下:** stash は `SKILL.md` の移動と README の書き換えが絡むため復元時に衝突しうる。step 1/6 の先送りは `${CLAUDE_PLUGIN_ROOT}` 前提で書いた grill スキルを試せないままにする | Copy JSON ボタンのコミット（`ff5e742`）を develop に作成し、feature を早送り |
 | W-2<br>新規成果物のコミット | 段階ごとに<br>分ける | 0001 の実装計画の段階と対応づけ、各コミットメッセージに根拠となる決定 ID を書けば SSOT とコードが相互参照できる。revert の単位も小さい | W-1 と W-4 が段階を増やしたため 5 → 8 コミット |
 | W-3<br>docs ジョブの<br>README 検査 | W-1 の後に<br>AI が再生成 | 順序を守れば「メンテナの作業の一部を AI が作る」問題が起きない。D-12 で得た「README.html の鮮度も検査できる」利点を捨てずに済む<br>**却下:** 検査を外す / `continue-on-error` は、どちらも赤いまま放置される状態を作る | W-1 のコミット後に再生成し、ドキュメント同期のコミットに同梱 |
 | W-4<br>samepage の<br>ファイル権限 | `cli.py` を直す | `.final.html` は `skills/samepage/SKILL.md` §8 で「配布・公開する側」と定義された成果物なので、既定で他者が読めないのは仕様と実装の食い違い。`_write_atomic` が `mkstemp` の 0600 のまま、`copymode` を既存ファイルにしか適用していなかった | 新規出力時は umask に従うよう修正。回帰テスト 2 件を追加 |
